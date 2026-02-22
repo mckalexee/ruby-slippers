@@ -1,5 +1,8 @@
 package-as: RubySlippers
 
+move-folders:
+  RubySlippers/RubySlippers: RubySlippers
+
 ignore:
   - README.md
   - CLAUDE.md
