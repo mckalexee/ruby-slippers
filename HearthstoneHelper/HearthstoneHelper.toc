@@ -1,0 +1,22 @@
+## Interface: 120001
+## Title: Hearthstone Helper
+## Notes: Track your hearthstone collection and use a random hearthstone with one click
+## Author: HearthstoneHelper
+## Version: 1.0.0
+## SavedVariables: HearthstoneHelperDB
+## IconTexture: Interface\Icons\INV_Misc_Rune_01
+## Category: Collections
+## AddonCompartmentFunc: HearthstoneHelper_OnAddonCompartmentClick
+## AddonCompartmentFuncOnEnter: HearthstoneHelper_OnAddonCompartmentEnter
+## AddonCompartmentFuncOnLeave: HearthstoneHelper_OnAddonCompartmentLeave
+
+#@no-lib-strip@
+Libs\LibStub\LibStub.lua
+Libs\SecureTabs-2.0\SecureTabs-2.0.lua
+#@end-no-lib-strip@
+
+Data.lua
+Core.lua
+UI.lua
+CollectionsTab.lua
+Config.lua

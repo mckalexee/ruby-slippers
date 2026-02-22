@@ -1,0 +1,5 @@
+# Research artifacts
+research_*
+
+# Claude Code
+.claude/
