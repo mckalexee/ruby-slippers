@@ -309,9 +309,8 @@ SlashCmdList["HEARTHSTONEHELPER"] = function(msg)
             end
         end
     elseif msg == "config" or msg == "options" then
-        -- Open addon settings if InterfaceOptionsFrame or Settings panel exists
-        if Settings and Settings.OpenToCategory then
-            Settings.OpenToCategory("Hearthstone Helper")
+        if ns.settingsCategory then
+            Settings.OpenToCategory(ns.settingsCategory:GetID())
         end
     elseif msg == "collection" or msg == "list" then
         C_AddOns.LoadAddOn("Blizzard_Collections")

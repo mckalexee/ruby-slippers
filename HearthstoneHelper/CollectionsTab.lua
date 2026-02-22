@@ -71,11 +71,14 @@ local function BuildFilteredList()
         end
     end
 
-    -- Sort: owned first, favorites first within each group, then by name
+    -- Sort: owned first, then garrison/dalaran last, favorites first, then alphabetical
     table.sort(filteredData, function(a, b)
         local aOwned = ns.ownedHearthstoneMap and ns.ownedHearthstoneMap[a.itemID] or false
         local bOwned = ns.ownedHearthstoneMap and ns.ownedHearthstoneMap[b.itemID] or false
         if aOwned ~= bOwned then return aOwned end
+        local aSpecial = a.category == "garrison" or a.category == "dalaran"
+        local bSpecial = b.category == "garrison" or b.category == "dalaran"
+        if aSpecial ~= bSpecial then return bSpecial end
         local _, _, _, aFav = C_ToyBox.GetToyInfo(a.itemID)
         local _, _, _, bFav = C_ToyBox.GetToyInfo(b.itemID)
         if (aFav or false) ~= (bFav or false) then return aFav or false end
