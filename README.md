@@ -47,7 +47,8 @@ Or enable "Create Action Bar Macro" in `/rs config` for an auto-managed macro wi
 ### Button Controls
 
 - **Left-click** - Use a random hearthstone
-- **Right-click** - Open the Collections Journal
+- **Right-click** - Pick a new random hearthstone
+- **Shift-right-click** - Open the Collections Journal
 - **Drag** - Move the button (unless locked)
 
 ## Requirements

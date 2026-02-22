@@ -139,6 +139,10 @@ btn:SetScript("PreClick", function(self, button)
     if InCombatLockdown() then return end
 
     if button == "RightButton" then
+        -- Save current state so shift+right-click can restore it
+        self._savedType = self:GetAttribute("type")
+        self._savedToy = self:GetAttribute("toy")
+        self._savedItem = self:GetAttribute("item")
         self:SetAttribute("type", nil)
     end
 end)
@@ -150,15 +154,25 @@ end)
 -- ------------------------------------
 btn:SetScript("PostClick", function(self, button)
     if button == "RightButton" then
-        C_AddOns.LoadAddOn("Blizzard_Collections")
-        if CollectionsJournal then
-            ShowUIPanel(CollectionsJournal)
-            if ns.collectionsTab and ns.collectionsTab.Select then
-                ns.collectionsTab.Select(ns.collectionsTab)
+        if IsShiftKeyDown() then
+            -- Shift+right-click: open collection, restore previous hearthstone
+            C_AddOns.LoadAddOn("Blizzard_Collections")
+            if CollectionsJournal then
+                ShowUIPanel(CollectionsJournal)
+                if ns.collectionsTab and ns.collectionsTab.Select then
+                    ns.collectionsTab.Select(ns.collectionsTab)
+                end
             end
+            -- Restore the button state that PreClick saved (don't change hearthstone)
+            if self._savedType then
+                self:SetAttribute("type", self._savedType)
+                self:SetAttribute("toy", self._savedToy)
+                self:SetAttribute("item", self._savedItem)
+            end
+        else
+            -- Right-click: pick a new random hearthstone
+            ns:SetRandomHearthstoneOnButton()
         end
-        -- Restore button attributes (PreClick cleared type for right-click)
-        ns:SetRandomHearthstoneOnButton()
         return
     end
 
@@ -186,7 +200,8 @@ btn:SetScript("OnEnter", function(self)
     end
 
     GameTooltip:AddLine(" ")
-    GameTooltip:AddLine("Right-click to open collection", 0.5, 0.5, 0.5)
+    GameTooltip:AddLine("Right-click: next hearthstone", 0.5, 0.5, 0.5)
+    GameTooltip:AddLine("Shift-right-click: open collection", 0.5, 0.5, 0.5)
     GameTooltip:Show()
 end)
 
