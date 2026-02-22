@@ -157,6 +157,8 @@ btn:SetScript("PostClick", function(self, button)
                 ns.collectionsTab.Select(ns.collectionsTab)
             end
         end
+        -- Restore button attributes (PreClick cleared type for right-click)
+        ns:SetRandomHearthstoneOnButton()
         return
     end
 
@@ -169,38 +171,22 @@ end)
 -- ------------------------------------
 btn:SetScript("OnEnter", function(self)
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-    GameTooltip:AddLine("Ruby Slippers", 1, 1, 1)
-    GameTooltip:AddLine("Click to use a random hearthstone", 0.8, 0.8, 0.8)
-    GameTooltip:AddLine("Right-click to open collection", 0.5, 0.8, 1)
 
-    -- Show current hearthstone queued
     local currentID = GetCurrentButtonHearthstoneID()
     if currentID then
-        local hsName = GetHearthstoneName(currentID)
-        if hsName then
-            GameTooltip:AddLine(" ")
-            GameTooltip:AddLine("Next: " .. hsName, 0, 1, 0)
-
-            -- Show cooldown if any
-            local startTime, duration, enable = GetItemCooldown(currentID)
-            if duration and duration > 0 and enable == 1 then
-                local remaining = duration - (GetTime() - startTime)
-                if remaining > 0 then
-                    local mins = math.floor(remaining / 60)
-                    local secs = math.floor(remaining % 60)
-                    GameTooltip:AddLine("Cooldown: " .. mins .. "m " .. secs .. "s", 1, 0.2, 0.2)
-                end
-            end
+        -- Show the native hearthstone tooltip (name, description, cooldown, etc.)
+        if ns:IsBagItem(currentID) then
+            GameTooltip:SetItemByID(currentID)
+        else
+            GameTooltip:SetToyByItemID(currentID)
         end
+    else
+        GameTooltip:AddLine("Ruby Slippers", 1, 1, 1)
+        GameTooltip:AddLine("No hearthstones available", 0.8, 0.8, 0.8)
     end
 
     GameTooltip:AddLine(" ")
-    GameTooltip:AddLine("/click RubySlippersButton", 0.5, 0.5, 0.5)
-
-    if ns.db and not ns.db.buttonLocked then
-        GameTooltip:AddLine("Drag to move", 0.5, 0.5, 0.5)
-    end
-
+    GameTooltip:AddLine("Right-click to open collection", 0.5, 0.5, 0.5)
     GameTooltip:Show()
 end)
 
