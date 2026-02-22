@@ -1,10 +1,6 @@
 package-as: RubySlippers
 
 ignore:
-  - .claude
-  - .gitignore
-  - .luacheckrc
-  - .pkgmeta
   - README.md
   - CLAUDE.md
   - LICENSE
@@ -12,5 +8,3 @@ ignore:
   - SESSION-REPORT-SecureTabs-CollectionsJournal.md
   - research_hearthstone_data.lua
   - research_ui_findings.md
-  - icon.png
-  - logo.png

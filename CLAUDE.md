@@ -38,16 +38,17 @@ When in doubt about any WoW API behavior, **check the addon guide first** before
 ## Project Structure
 
 ```
-(repo root)                    Repo root = addon folder (package-as: RubySlippers)
-  RubySlippers.toc             Addon manifest (Interface 120001)
-  Libs/
-    LibStub/LibStub.lua        Standard WoW library loader
-    SecureTabs-2.0/            Adds tabs to secure panels without taint (by Jaliborc)
-  Data.lua                     All hearthstone toy IDs, names, categories, sources
-  Core.lua                     Init, SavedVariables, scanning, random selection, callbacks
-  UI.lua                       Floating button, SecureActionButton, slash commands, addon compartment
-  CollectionsTab.lua           "Hearthstones" tab in Collections Journal
-  Config.lua                   Settings panel (Settings API)
+(repo root)
+  RubySlippers/                Addon folder (goes in Interface\AddOns\)
+    RubySlippers.toc           Addon manifest (Interface 120001)
+    Libs/
+      LibStub/LibStub.lua      Standard WoW library loader
+      SecureTabs-2.0/          Adds tabs to secure panels without taint (by Jaliborc)
+    Data.lua                   All hearthstone toy IDs, names, categories, sources
+    Core.lua                   Init, SavedVariables, scanning, random selection, callbacks
+    UI.lua                     Floating button, SecureActionButton, slash commands, addon compartment
+    CollectionsTab.lua         "Hearthstones" tab in Collections Journal
+    Config.lua                 Settings panel (Settings API)
   .pkgmeta                     CurseForge packaging config
 ```
 
@@ -196,7 +197,7 @@ The lookup tables (`AllHearthstoneIDs`, `HomeHearthstoneIDs`) are built automati
 
 ## Installation
 
-CurseForge packages the repo root as `RubySlippers/` via `.pkgmeta`. For local dev, junction the repo root into `Interface\AddOns\RubySlippers`.
+CurseForge packages the `RubySlippers/` subfolder via `.pkgmeta`. For local dev, junction the `RubySlippers/` subfolder into `Interface\AddOns\RubySlippers`.
 
 ## Versioning and Publishing
 
