@@ -3,11 +3,14 @@ package-as: RubySlippers
 move-folders:
   RubySlippers/RubySlippers: RubySlippers
 
+manual-changelog:
+  filename: RELEASE_NOTES.md
+  markup-type: markdown
+
 ignore:
   - README.md
   - CLAUDE.md
   - LICENSE
+  - CHANGELOG.md
   - curseforge-description.md
-  - SESSION-REPORT-SecureTabs-CollectionsJournal.md
-  - research_hearthstone_data.lua
-  - research_ui_findings.md
+  - .claude

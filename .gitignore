@@ -8,5 +8,6 @@ research_*
 *.lib
 *.exp
 
-# Claude Code
-.claude/
+# Claude Code — ignore everything except skills (checked into repo)
+.claude/*
+!.claude/skills/

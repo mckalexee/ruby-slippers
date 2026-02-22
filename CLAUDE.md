@@ -40,7 +40,9 @@ When in doubt about any WoW API behavior, **check the addon guide first** before
 ```
 (repo root)
   .github/workflows/release.yml  GitHub Actions: BigWigsMods/packager on tag push
-  .pkgmeta                       Packaging config (package-as, move-folders, ignore)
+  .pkgmeta                       Packaging config (package-as, move-folders, ignore, changelog)
+  CHANGELOG.md                   Full cumulative changelog (repo-only, not packaged)
+  RELEASE_NOTES.md               Current release notes (sent to CurseForge + GitHub Releases)
   RubySlippers/                  Addon folder (goes in Interface\AddOns\)
     RubySlippers.toc             Addon manifest (Interface 120001)
     Libs/
@@ -202,26 +204,46 @@ CurseForge packages the `RubySlippers/` subfolder via `.pkgmeta`. For local dev,
 
 ## Versioning and Publishing
 
-The TOC uses `@project-version@` which the packager replaces with the git tag name. Do not hardcode a version number in the TOC. The TOC also has `## X-Curse-Project-ID: 1469357` which the packager reads to know where to upload.
+### Version Scheme (Semantic Versioning)
 
-Publishing uses **GitHub Actions** with **BigWigsMods/packager@v2** (`.github/workflows/release.yml`). The workflow triggers on any tag push. CurseForge's built-in webhook packager does NOT work for this repo — don't use it.
+- **Major (2.0.0)** — WoW API/interface version bumps requiring significant rework, or fundamental addon redesigns.
+- **Minor (1.2.0)** — New user-facing features.
+- **Patch (1.1.1)** — Bug fixes, tooltip tweaks, new hearthstone data entries.
+- **Pre-release** — `X.Y.Z-beta1`, `X.Y.Z-alpha1` for test builds.
 
-The `.pkgmeta` uses `move-folders` (WeakAuras pattern) because the addon lives in a `RubySlippers/` subfolder rather than at the repo root. The packager needs this to find the TOC file in the subdirectory.
+The current version is the topmost non-Unreleased heading in `CHANGELOG.md`.
 
-To publish a release:
-1. Commit and push all changes
-2. Tag and push: `git tag 1.2.0 && git push --tags`
-3. GitHub Actions builds the zip and uploads to CurseForge + creates a GitHub Release
+### Branching
 
-Tag naming determines release type:
-- `1.2.0` → Release
-- `1.2.0-beta1` → Beta
-- `1.2.0-alpha1` → Alpha
+- **`main`** — Primary branch. Day-to-day development happens here. Tags on main are releases.
+- **`hotfix/X.Y.Z`** — Short-lived. Branch off a release tag to patch a published version when main has unreleased work. Use `/hotfix` skill for procedure.
+- **`ptr-*`** — Long-lived. For next WoW expansion/patch when Blizzard APIs change on the PTR. Merges to main when the patch goes live.
+- **Feature branches** — Optional, for large changes to keep main clean.
 
-Required GitHub repo secret: `CF_API_KEY` (CurseForge API token). `GITHUB_TOKEN` is provided automatically.
+### Changelog Rules
 
-CurseForge project: https://authors.curseforge.com/#/projects/1469357
-GitHub repo: https://github.com/mckalexee/ruby-slippers
+| File | Purpose | In package? |
+|------|---------|-------------|
+| `CHANGELOG.md` | Full cumulative history. `## Unreleased` section at top, past releases below. | No (`.pkgmeta` ignore list) |
+| `RELEASE_NOTES.md` | Current release's notes only. Overwritten at publish time. Sent to CurseForge and GitHub Releases. | Yes (`manual-changelog` in `.pkgmeta`) |
+
+- **When committing user-facing changes** (features, fixes, behavior changes): add a line under `## Unreleased` in `CHANGELOG.md`.
+- **Skip** internal-only changes (CLAUDE.md, memory, cleanup with no behavior change).
+- **NEVER publish a release (tag + push) without explicit user instruction.** Use the `/release` skill when asked.
+
+### Publishing Details
+
+The TOC uses `@project-version@` (replaced by tag name at build time). `## X-Curse-Project-ID: 1469357` tells the packager which CurseForge project to upload to. Do not hardcode version numbers.
+
+Publishing uses **GitHub Actions** with **BigWigsMods/packager@v2** (`.github/workflows/release.yml`). Triggers on any tag push. CurseForge's built-in webhook packager does NOT work for this repo.
+
+The `.pkgmeta` uses `move-folders` (WeakAuras pattern) because the addon lives in a `RubySlippers/` subfolder.
+
+Tag suffixes control CurseForge release type: `1.2.0` → Release, `1.2.0-beta1` → Beta, `1.2.0-alpha1` → Alpha.
+
+Required secret: `CF_API_KEY`. `GITHUB_TOKEN` is automatic.
+
+CurseForge: https://authors.curseforge.com/#/projects/1469357 | GitHub: https://github.com/mckalexee/ruby-slippers
 
 ## Debugging
 

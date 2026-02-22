@@ -55,6 +55,10 @@ Or enable "Create Action Bar Macro" in `/rs config` for an auto-managed macro wi
 - World of Warcraft 12.0 (The War Within / Midnight)
 - Interface version 120001
 
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for a full history of changes.
+
 ## Bundled Libraries
 
 - [LibStub](https://www.wowace.com/addons/libstub/) - Library versioning
