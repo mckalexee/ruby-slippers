@@ -64,13 +64,16 @@ Files share state through the addon namespace: `local addonName, ns = ...` at th
 
 | Member | Set In | Description |
 |--------|--------|-------------|
-| `ns.HearthstoneData` | Data.lua | Array of `{itemID, name, category, source}` for all known hearthstones |
+| `ns.HearthstoneData` | Data.lua | Array of `{itemID, name, category, source, isBagItem?}` for all known hearthstones |
 | `ns.AllHearthstoneIDs` | Data.lua | `{[itemID] = true}` lookup set |
 | `ns.HomeHearthstoneIDs` | Data.lua | `{[itemID] = true}` home-only subset |
+| `ns.BagItemHearthstoneIDs` | Data.lua | `{[itemID] = true}` bag item (non-toy) subset |
+| `ns.DefaultHearthstoneID` | Data.lua | 6948 — the default Hearthstone (bag item, not a toy) |
+| `ns:IsBagItem(id)` | Data.lua | Check if a hearthstone is a bag item vs toy |
 | `ns.db` | Core.lua | Reference to `HearthstoneHelperDB` SavedVariables |
 | `ns.ownedHearthstones` | Core.lua | Array of owned hearthstone info tables |
 | `ns.ownedHearthstoneMap` | Core.lua | `{[itemID] = true}` for owned |
-| `ns:ScanOwnedHearthstones()` | Core.lua | Refresh ownership data from `PlayerHasToy()` |
+| `ns:ScanOwnedHearthstones()` | Core.lua | Refresh ownership data from `PlayerHasToy()` / `GetItemCount()` |
 | `ns:GetRandomHearthstone()` | Core.lua | Returns a random owned, non-excluded hearthstone |
 | `ns:GetHearthstoneInfo(id)` | Core.lua | Full info: name, icon, category, owned, fav, excluded, cooldown |
 | `ns:IsOnCooldown(id)` | Core.lua | Returns `onCooldown, remaining` using `GetItemCooldown()` |
@@ -96,8 +99,8 @@ Files share state through the addon namespace: `local addonName, ns = ...` at th
 
 ```lua
 {
-    favorites = {},        -- {[itemID] = true}
     excluded = {},         -- {[itemID] = true}
+    includeDefaultHearthstone = true,
     includeGarrison = false,
     includeDalaran = false,
     favoritesOnly = false,
@@ -117,9 +120,9 @@ Files share state through the addon namespace: `local addonName, ns = ...` at th
 
 ### Protected Actions / Secure Buttons
 
-Hearthstones are toys. Using a toy is a **protected action** that requires a hardware event (user click). You cannot call `UseToy()` or `C_ToyBox.PlayWithToy()` directly from addon code.
+Most hearthstones are toys. Using a toy is a **protected action** that requires a hardware event (user click). You cannot call `UseToy()` or `C_ToyBox.PlayWithToy()` directly from addon code. The default Hearthstone (6948) is a bag item (not a toy) and uses `type="item"` instead.
 
-The solution: `SecureActionButtonTemplate` with `type="toy"`, `toy=itemID`. The button named `HearthstoneHelperButton` has a `PreClick` handler that sets the toy attribute to a random hearthstone before each click. This works because:
+The solution: `SecureActionButtonTemplate` with `type="toy"`, `toy=itemID` for toy hearthstones, or `type="item"`, `item="item:itemID"` for the default bag-item hearthstone. `SetRandomHearthstoneOnButton()` sets the correct type based on the `isBagItem` flag. This works because:
 1. Hearthstones can only be used out of combat
 2. `PreClick` runs before the secure action handler
 3. `SetAttribute()` is allowed when `InCombatLockdown()` is false
@@ -136,7 +139,10 @@ Users can bind this to a macro: `/click HearthstoneHelperButton`
 | `GetItemCooldown(itemID)` | Cooldown info | Returns: startTime, duration, enable |
 | `GameTooltip:SetToyByItemID(id)` | Show toy tooltip | |
 | `C_AddOns.LoadAddOn("Blizzard_Collections")` | Force-load Collections UI | Required before accessing CollectionsJournal |
-| `SecureActionButtonTemplate` | Secure clickable button | With `type="toy"`, `toy=itemID` |
+| `GetItemCount(itemID)` | Check bag item count | **Global function**; used for default Hearthstone ownership |
+| `C_Item.GetItemInfo(itemID)` | Get item name, icon, etc. | Returns: name, link, quality, ..., icon (10th return) |
+| `GameTooltip:SetItemByID(id)` | Show item tooltip | Used for bag-item hearthstones |
+| `SecureActionButtonTemplate` | Secure clickable button | With `type="toy"`, `toy=itemID` or `type="item"`, `item="item:ID"` |
 | `RegisterForClicks("AnyUp")` | Register click types | See note below about AnyDown vs AnyUp |
 | `C_ToyBox.PickupToyBoxItem(itemID)` | Drag toy to cursor | For drag-to-action-bar; requires hardware event (OnDragStart) |
 
@@ -146,7 +152,7 @@ Users can bind this to a macro: `/click HearthstoneHelperButton`
 - **garrison** - Garrison Hearthstone (110560). Goes to WoD garrison.
 - **dalaran** - Dalaran Hearthstone (140192). Goes to Legion Dalaran.
 
-All hearthstones have been toys since patch 10.1.5 (including the base Hearthstone, item 6948).
+Most hearthstones are toys. The default Hearthstone (item 6948) reverted to a bag item in WoW 12.0 and is handled separately via `isBagItem = true` in Data.lua. Entries with `isBagItem` use `GetItemCount()` for ownership, `C_Item.GetItemInfo()` for name/icon, `type="item"` on SecureActionButtons, and `GameTooltip:SetItemByID()` for tooltips.
 
 ### SecureTabs-2.0 Integration
 

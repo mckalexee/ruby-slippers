@@ -9,7 +9,7 @@ local _, ns = ...
 -- category: "home" (teleports to bound inn), "garrison", "dalaran"
 ns.HearthstoneData = {
     -- Core hearthstones
-    { itemID = 6948,   name = "Hearthstone",                          category = "home",     source = "Default item for all characters" },
+    { itemID = 6948,   name = "Hearthstone",                          category = "home",     source = "Default item for all characters", isBagItem = true },
     { itemID = 110560, name = "Garrison Hearthstone",                 category = "garrison", source = "Warlords of Draenor garrison quest line" },
     { itemID = 140192, name = "Dalaran Hearthstone",                  category = "dalaran",  source = "Legion introductory quest line" },
 
@@ -85,3 +85,17 @@ end
 -- Special destination IDs
 ns.GarrisonHearthstoneID = 110560
 ns.DalaranHearthstoneID = 140192
+ns.DefaultHearthstoneID = 6948
+
+-- Quick lookup: bag item hearthstone IDs (not toys)
+ns.BagItemHearthstoneIDs = {}
+for _, data in ipairs(ns.HearthstoneData) do
+    if data.isBagItem then
+        ns.BagItemHearthstoneIDs[data.itemID] = true
+    end
+end
+
+-- Check if a hearthstone is a bag item (not a toy)
+function ns:IsBagItem(itemID)
+    return self.BagItemHearthstoneIDs[itemID] or false
+end

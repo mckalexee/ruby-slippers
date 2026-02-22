@@ -104,17 +104,42 @@ cooldownFrame:SetAllPoints()
 btn.cooldown = cooldownFrame
 
 -- ------------------------------------
+-- Helpers for reading the current hearthstone from button attributes
+-- ------------------------------------
+local function GetCurrentButtonHearthstoneID()
+    local btnType = btn:GetAttribute("type")
+    if btnType == "toy" then
+        local toyID = btn:GetAttribute("toy")
+        return toyID and tonumber(toyID)
+    elseif btnType == "item" then
+        local itemAttr = btn:GetAttribute("item")
+        if itemAttr then
+            return tonumber(itemAttr:match("item:(%d+)"))
+        end
+    end
+    return nil
+end
+
+local function GetHearthstoneName(itemID)
+    if ns:IsBagItem(itemID) then
+        return (C_Item.GetItemInfo(itemID))
+    else
+        local _, toyName = C_ToyBox.GetToyInfo(itemID)
+        return toyName
+    end
+end
+
+-- ------------------------------------
 -- PreClick: set up attributes before the secure action fires.
 -- Only fires on mouse-up (AnyUp registration). Right-click clears
--- type so the secure action is skipped; left-click ensures type="toy".
+-- type so the secure action is skipped; left-click type is pre-set
+-- by SetRandomHearthstoneOnButton (either "toy" or "item").
 -- ------------------------------------
 btn:SetScript("PreClick", function(self, button)
     if InCombatLockdown() then return end
 
     if button == "RightButton" then
         self:SetAttribute("type", nil)
-    else
-        self:SetAttribute("type", "toy")
     end
 end)
 
@@ -149,24 +174,21 @@ btn:SetScript("OnEnter", function(self)
     GameTooltip:AddLine("Right-click to open collection", 0.5, 0.8, 1)
 
     -- Show current hearthstone queued
-    local toyID = self:GetAttribute("toy")
-    if toyID then
-        toyID = tonumber(toyID)
-        if toyID then
-            local _, toyName = C_ToyBox.GetToyInfo(toyID)
-            if toyName then
-                GameTooltip:AddLine(" ")
-                GameTooltip:AddLine("Next: " .. toyName, 0, 1, 0)
+    local currentID = GetCurrentButtonHearthstoneID()
+    if currentID then
+        local hsName = GetHearthstoneName(currentID)
+        if hsName then
+            GameTooltip:AddLine(" ")
+            GameTooltip:AddLine("Next: " .. hsName, 0, 1, 0)
 
-                -- Show cooldown if any
-                local startTime, duration, enable = GetItemCooldown(toyID)
-                if duration and duration > 0 and enable == 1 then
-                    local remaining = duration - (GetTime() - startTime)
-                    if remaining > 0 then
-                        local mins = math.floor(remaining / 60)
-                        local secs = math.floor(remaining % 60)
-                        GameTooltip:AddLine("Cooldown: " .. mins .. "m " .. secs .. "s", 1, 0.2, 0.2)
-                    end
+            -- Show cooldown if any
+            local startTime, duration, enable = GetItemCooldown(currentID)
+            if duration and duration > 0 and enable == 1 then
+                local remaining = duration - (GetTime() - startTime)
+                if remaining > 0 then
+                    local mins = math.floor(remaining / 60)
+                    local secs = math.floor(remaining % 60)
+                    GameTooltip:AddLine("Cooldown: " .. mins .. "m " .. secs .. "s", 1, 0.2, 0.2)
                 end
             end
         end
@@ -190,19 +212,24 @@ end)
 -- Update the button icon, cooldown, and queued hearthstone
 -- ------------------------------------
 function ns:UpdateButtonDisplay()
-    local toyID = btn:GetAttribute("toy")
-    if toyID then
-        toyID = tonumber(toyID)
-    end
+    local currentID = GetCurrentButtonHearthstoneID()
 
-    if toyID then
-        local _, _, toyIcon = C_ToyBox.GetToyInfo(toyID)
-        if toyIcon then
-            iconTex:SetTexture(toyIcon)
+    if currentID then
+        local icon
+        if ns:IsBagItem(currentID) then
+            local _, _, _, _, _, _, _, _, _, itemIcon = C_Item.GetItemInfo(currentID)
+            icon = itemIcon
+        else
+            local _, _, toyIcon = C_ToyBox.GetToyInfo(currentID)
+            icon = toyIcon
+        end
+
+        if icon then
+            iconTex:SetTexture(icon)
         end
 
         -- Update cooldown spinner
-        local startTime, duration, enable = GetItemCooldown(toyID)
+        local startTime, duration, enable = GetItemCooldown(currentID)
         if duration and duration > 0 and enable == 1 then
             cooldownFrame:SetCooldown(startTime, duration)
         else
@@ -221,8 +248,13 @@ function ns:SetRandomHearthstoneOnButton()
     if InCombatLockdown() then return end
     local hs = ns:GetRandomHearthstone()
     if hs then
-        btn:SetAttribute("type", "toy")
-        btn:SetAttribute("toy", hs.itemID)
+        if hs.isBagItem then
+            btn:SetAttribute("type", "item")
+            btn:SetAttribute("item", "item:" .. hs.itemID)
+        else
+            btn:SetAttribute("type", "toy")
+            btn:SetAttribute("toy", hs.itemID)
+        end
     end
     ns:UpdateButtonDisplay()
 end
@@ -301,11 +333,11 @@ SlashCmdList["HEARTHSTONEHELPER"] = function(msg)
         print("|cff00ccffHearthstone Helper:|r Button unlocked. Drag to move.")
     elseif msg == "random" or msg == "rand" then
         ns:SetRandomHearthstoneOnButton()
-        local toyID = btn:GetAttribute("toy")
-        if toyID then
-            local _, toyName = C_ToyBox.GetToyInfo(tonumber(toyID))
-            if toyName then
-                print("|cff00ccffHearthstone Helper:|r Next hearthstone: " .. toyName)
+        local currentID = GetCurrentButtonHearthstoneID()
+        if currentID then
+            local hsName = GetHearthstoneName(currentID)
+            if hsName then
+                print("|cff00ccffHearthstone Helper:|r Next hearthstone: " .. hsName)
             end
         end
     elseif msg == "config" or msg == "options" then

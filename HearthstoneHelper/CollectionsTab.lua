@@ -79,9 +79,16 @@ local function BuildFilteredList()
         local aSpecial = a.category == "garrison" or a.category == "dalaran"
         local bSpecial = b.category == "garrison" or b.category == "dalaran"
         if aSpecial ~= bSpecial then return bSpecial end
-        local _, _, _, aFav = C_ToyBox.GetToyInfo(a.itemID)
-        local _, _, _, bFav = C_ToyBox.GetToyInfo(b.itemID)
-        if (aFav or false) ~= (bFav or false) then return aFav or false end
+        local aFav, bFav = false, false
+        if not a.isBagItem then
+            local _, _, _, f = C_ToyBox.GetToyInfo(a.itemID)
+            aFav = f or false
+        end
+        if not b.isBagItem then
+            local _, _, _, f = C_ToyBox.GetToyInfo(b.itemID)
+            bFav = f or false
+        end
+        if aFav ~= bFav then return aFav end
         return (a.name or "") < (b.name or "")
     end)
 end
@@ -108,19 +115,28 @@ local function ShowContextMenu(cellFrame, itemID)
     local isOwned = ns.ownedHearthstoneMap and ns.ownedHearthstoneMap[itemID]
     if not isOwned then return end
 
-    local _, _, _, isFavorite = C_ToyBox.GetToyInfo(itemID)
+    local isBagItem = ns:IsBagItem(itemID)
+    local isFavorite = false
+    if not isBagItem then
+        local _, _, _, toyFav = C_ToyBox.GetToyInfo(itemID)
+        isFavorite = toyFav
+    end
     local isExcluded = ns.db and ns.db.excluded and ns.db.excluded[itemID]
-    local isCategoryControlled = itemID == ns.GarrisonHearthstoneID or itemID == ns.DalaranHearthstoneID
+    local isCategoryControlled = itemID == ns.GarrisonHearthstoneID
+        or itemID == ns.DalaranHearthstoneID
+        or itemID == ns.DefaultHearthstoneID
 
     MenuUtil.CreateContextMenu(cellFrame, function(_, rootDescription)
-        if isFavorite then
-            rootDescription:CreateButton("Unfavorite", function()
-                ns:ToggleFavorite(itemID)
-            end)
-        else
-            rootDescription:CreateButton("Set Favorite", function()
-                ns:ToggleFavorite(itemID)
-            end)
+        if not isBagItem then
+            if isFavorite then
+                rootDescription:CreateButton("Unfavorite", function()
+                    ns:ToggleFavorite(itemID)
+                end)
+            else
+                rootDescription:CreateButton("Set Favorite", function()
+                    ns:ToggleFavorite(itemID)
+                end)
+            end
         end
 
         if isCategoryControlled then
@@ -249,7 +265,11 @@ local function CreateCell(parent, index)
     btn:SetScript("OnEnter", function(self)
         if not self.itemID then return end
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-        GameTooltip:SetToyByItemID(self.itemID)
+        if self.isBagItem then
+            GameTooltip:SetItemByID(self.itemID)
+        else
+            GameTooltip:SetToyByItemID(self.itemID)
+        end
         GameTooltip:Show()
     end)
     btn:SetScript("OnLeave", function()
@@ -259,7 +279,20 @@ local function CreateCell(parent, index)
     -- Drag: pick up toy for action bar placement
     btn:SetScript("OnDragStart", function(self)
         if self.itemID and not InCombatLockdown() then
-            C_ToyBox.PickupToyBoxItem(self.itemID)
+            if self.isBagItem then
+                -- Find the item in bags and pick it up
+                for bag = 0, 4 do
+                    for slot = 1, C_Container.GetContainerNumSlots(bag) do
+                        local info = C_Container.GetContainerItemInfo(bag, slot)
+                        if info and info.itemID == self.itemID then
+                            C_Container.PickupContainerItem(bag, slot)
+                            return
+                        end
+                    end
+                end
+            else
+                C_ToyBox.PickupToyBoxItem(self.itemID)
+            end
         end
     end)
 
@@ -269,11 +302,16 @@ local function CreateCell(parent, index)
         if button == "RightButton" then
             self:SetAttribute("type", nil) -- Suppress secure action for right-click
         else
-            -- Left-click: use the toy
+            -- Left-click: use the hearthstone
             local isOwned = self.itemID and ns.ownedHearthstoneMap and ns.ownedHearthstoneMap[self.itemID]
             if isOwned then
-                self:SetAttribute("type", "toy")
-                self:SetAttribute("toy", self.itemID)
+                if self.isBagItem then
+                    self:SetAttribute("type", "item")
+                    self:SetAttribute("item", "item:" .. self.itemID)
+                else
+                    self:SetAttribute("type", "toy")
+                    self:SetAttribute("toy", self.itemID)
+                end
             else
                 self:SetAttribute("type", nil)
             end
@@ -297,27 +335,36 @@ local function UpdateCell(cell, data)
     if not data then
         cell:Hide()
         cell.itemID = nil
+        cell.isBagItem = false
         return
     end
 
     cell.itemID = data.itemID
+    cell.isBagItem = data.isBagItem or false
     cell:Show()
 
     local isOwned = ns.ownedHearthstoneMap and ns.ownedHearthstoneMap[data.itemID] or false
-    local _, _, _, isFavorite = C_ToyBox.GetToyInfo(data.itemID)
+    local isFavorite = false
+    local icon
+    if data.isBagItem then
+        local _, _, _, _, _, _, _, _, _, itemIcon = C_Item.GetItemInfo(data.itemID)
+        icon = itemIcon or "Interface\\Icons\\INV_Misc_QuestionMark"
+    else
+        local _, _, toyIcon, toyFav = C_ToyBox.GetToyInfo(data.itemID)
+        icon = toyIcon or "Interface\\Icons\\INV_Misc_QuestionMark"
+        isFavorite = toyFav or false
+    end
     -- Effective exclusion: per-item OR category setting
     local isExcluded = ns.db and ns.db.excluded and ns.db.excluded[data.itemID] or false
     if not isExcluded and ns.db then
-        if data.category == "garrison" and not ns.db.includeGarrison then
+        if data.isBagItem and not ns.db.includeDefaultHearthstone then
+            isExcluded = true
+        elseif data.category == "garrison" and not ns.db.includeGarrison then
             isExcluded = true
         elseif data.category == "dalaran" and not ns.db.includeDalaran then
             isExcluded = true
         end
     end
-
-    -- Get toy icon from API
-    local _, _, toyIcon = C_ToyBox.GetToyInfo(data.itemID)
-    local icon = toyIcon or "Interface\\Icons\\INV_Misc_QuestionMark"
 
     if isOwned then
         -- Collected: full color icon, gold text, gold border

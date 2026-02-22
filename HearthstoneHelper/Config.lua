@@ -11,6 +11,23 @@ function ns:InitConfig()
 
     local category = Settings.RegisterVerticalLayoutCategory("Hearthstone Helper")
 
+    -- Include Default Hearthstone (bag item) in random
+    do
+        local setting = Settings.RegisterAddOnSetting(category,
+            "Include Default Hearthstone",
+            "includeDefaultHearthstone",
+            db,
+            Settings.VarType.Boolean,
+            "Include Default Hearthstone",
+            true
+        )
+        setting:SetValueChangedCallback(function()
+            ns:FireCallback("SETTINGS_CHANGED")
+        end)
+        Settings.CreateCheckbox(category, setting,
+            "Include the default Hearthstone (bag item) when selecting a random hearthstone. Disable this if you only want to use toy hearthstones.")
+    end
+
     -- Include Garrison Hearthstone in random
     do
         local setting = Settings.RegisterAddOnSetting(category,

@@ -8,6 +8,7 @@ local addonName, ns = ...
 -- SavedVariables defaults
 local defaults = {
     excluded = {},
+    includeDefaultHearthstone = true,
     includeGarrison = false,
     includeDalaran = false,
     favoritesOnly = false,
@@ -61,20 +62,39 @@ end
 ns.ownedHearthstones = {}
 ns.ownedHearthstoneMap = {}
 
--- Scan all owned hearthstone toys
+-- Scan all owned hearthstones (toys + bag items)
 function ns:ScanOwnedHearthstones()
     wipe(self.ownedHearthstones)
     wipe(self.ownedHearthstoneMap)
 
     for _, data in ipairs(self.HearthstoneData) do
-        if PlayerHasToy(data.itemID) then
-            local _, name, icon = C_ToyBox.GetToyInfo(data.itemID)
+        local isOwned = false
+        local name, icon
+
+        if data.isBagItem then
+            isOwned = GetItemCount(data.itemID) > 0
+            if isOwned then
+                local itemName, _, _, _, _, _, _, _, _, itemIcon = C_Item.GetItemInfo(data.itemID)
+                name = itemName
+                icon = itemIcon
+            end
+        else
+            isOwned = PlayerHasToy(data.itemID)
+            if isOwned then
+                local _, toyName, toyIcon = C_ToyBox.GetToyInfo(data.itemID)
+                name = toyName
+                icon = toyIcon
+            end
+        end
+
+        if isOwned then
             tinsert(self.ownedHearthstones, {
-                itemID   = data.itemID,
-                name     = name or data.name,
-                icon     = icon or 0,
-                category = data.category,
-                source   = data.source,
+                itemID    = data.itemID,
+                name      = name or data.name,
+                icon      = icon or 0,
+                category  = data.category,
+                source    = data.source,
+                isBagItem = data.isBagItem or false,
             })
             self.ownedHearthstoneMap[data.itemID] = true
         end
@@ -98,13 +118,21 @@ function ns:GetRandomHearthstone()
 
         -- Check favorites-only mode (uses Blizzard's native favorites)
         if not dominated and db.favoritesOnly then
-            local _, _, _, isFav = C_ToyBox.GetToyInfo(hs.itemID)
-            if not isFav then
+            if hs.isBagItem then
+                -- Bag items can't be Blizzard-favorited; exclude in favorites-only mode
                 dominated = true
+            else
+                local _, _, _, isFav = C_ToyBox.GetToyInfo(hs.itemID)
+                if not isFav then
+                    dominated = true
+                end
             end
         end
 
-        -- Check garrison/dalaran inclusion
+        -- Check category-controlled inclusion
+        if not dominated and hs.isBagItem and not db.includeDefaultHearthstone then
+            dominated = true
+        end
         if not dominated and hs.category == "garrison" and not db.includeGarrison then
             dominated = true
         end
@@ -141,9 +169,20 @@ function ns:GetHearthstoneInfo(itemID)
         return nil
     end
 
-    local _, name, icon, isFavorite = C_ToyBox.GetToyInfo(itemID)
+    local name, icon, isFavorite
+    if data.isBagItem then
+        local itemName, _, _, _, _, _, _, _, _, itemIcon = C_Item.GetItemInfo(itemID)
+        name = itemName
+        icon = itemIcon
+        isFavorite = false
+    else
+        local _, toyName, toyIcon, toyFav = C_ToyBox.GetToyInfo(itemID)
+        name = toyName
+        icon = toyIcon
+        isFavorite = toyFav or false
+    end
+
     local isOwned = self.ownedHearthstoneMap[itemID] or false
-    isFavorite = isFavorite or false
     local isExcluded = db.excluded[itemID] or false
     local isOnCooldown, cooldownRemaining = self:IsOnCooldown(itemID)
 
@@ -164,6 +203,7 @@ end
 
 -- Toggle favorite status (uses Blizzard's native toy favorite system)
 function ns:ToggleFavorite(itemID)
+    if self:IsBagItem(itemID) then return end
     local _, _, _, isFavorite = C_ToyBox.GetToyInfo(itemID)
     C_ToyBox.SetIsFavorite(itemID, not isFavorite)
     self:FireCallback("HEARTHSTONES_UPDATED")
@@ -222,6 +262,10 @@ function events:TOYS_UPDATED()
 end
 
 function events:NEW_TOY_ADDED()
+    ns:ScanOwnedHearthstones()
+end
+
+function events:BAG_UPDATE_DELAYED()
     ns:ScanOwnedHearthstones()
 end
 
