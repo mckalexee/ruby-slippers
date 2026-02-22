@@ -112,6 +112,7 @@ end)
 btn:SetScript("PostClick", function(self, button)
     if button == "RightButton" then
         -- Open the Collections Journal to our tab
+        C_AddOns.LoadAddOn("Blizzard_Collections")
         if CollectionsJournal then
             if CollectionsJournal:IsShown() then
                 HideUIPanel(CollectionsJournal)
@@ -301,6 +302,7 @@ SlashCmdList["HEARTHSTONEHELPER"] = function(msg)
             Settings.OpenToCategory("Hearthstone Helper")
         end
     elseif msg == "collection" or msg == "list" then
+        C_AddOns.LoadAddOn("Blizzard_Collections")
         if CollectionsJournal then
             ShowUIPanel(CollectionsJournal)
         end

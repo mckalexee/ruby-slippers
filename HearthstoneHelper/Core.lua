@@ -203,9 +203,10 @@ function events:ADDON_LOADED(loadedAddon)
     end
 end
 
-function events:PLAYER_LOGIN()
+function events:PLAYER_ENTERING_WORLD()
     ns:ScanOwnedHearthstones()
     ns:FireCallback("ADDON_READY")
+    self:UnregisterEvent("PLAYER_ENTERING_WORLD")
 end
 
 function events:TOYS_UPDATED()
