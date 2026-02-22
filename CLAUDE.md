@@ -39,17 +39,18 @@ When in doubt about any WoW API behavior, **check the addon guide first** before
 
 ```
 (repo root)
-  RubySlippers/                Addon folder (goes in Interface\AddOns\)
-    RubySlippers.toc           Addon manifest (Interface 120001)
+  .github/workflows/release.yml  GitHub Actions: BigWigsMods/packager on tag push
+  .pkgmeta                       Packaging config (package-as, move-folders, ignore)
+  RubySlippers/                  Addon folder (goes in Interface\AddOns\)
+    RubySlippers.toc             Addon manifest (Interface 120001)
     Libs/
-      LibStub/LibStub.lua      Standard WoW library loader
-      SecureTabs-2.0/          Adds tabs to secure panels without taint (by Jaliborc)
-    Data.lua                   All hearthstone toy IDs, names, categories, sources
-    Core.lua                   Init, SavedVariables, scanning, random selection, callbacks
-    UI.lua                     Floating button, SecureActionButton, slash commands, addon compartment
-    CollectionsTab.lua         "Hearthstones" tab in Collections Journal
-    Config.lua                 Settings panel (Settings API)
-  .pkgmeta                     CurseForge packaging config
+      LibStub/LibStub.lua        Standard WoW library loader
+      SecureTabs-2.0/            Adds tabs to secure panels without taint (by Jaliborc)
+    Data.lua                     All hearthstone toy IDs, names, categories, sources
+    Core.lua                     Init, SavedVariables, scanning, random selection, callbacks
+    UI.lua                       Floating button, SecureActionButton, slash commands, addon compartment
+    CollectionsTab.lua           "Hearthstones" tab in Collections Journal
+    Config.lua                   Settings panel (Settings API)
 ```
 
 Libraries are included by copying their files into `Libs/` and loading them in the TOC. The `#@no-lib-strip@` tags in the TOC tell packagers (CurseForge, etc.) to strip embedded libs for users who install them standalone. See `N:\src\addon-guide\08-libraries-and-embeds.md` for full details on the WoW library ecosystem.
@@ -201,18 +202,23 @@ CurseForge packages the `RubySlippers/` subfolder via `.pkgmeta`. For local dev,
 
 ## Versioning and Publishing
 
-The TOC uses `@project-version@` which CurseForge's packager replaces with the git tag name. Do not hardcode a version number in the TOC.
+The TOC uses `@project-version@` which the packager replaces with the git tag name. Do not hardcode a version number in the TOC. The TOC also has `## X-Curse-Project-ID: 1469357` which the packager reads to know where to upload.
+
+Publishing uses **GitHub Actions** with **BigWigsMods/packager@v2** (`.github/workflows/release.yml`). The workflow triggers on any tag push. CurseForge's built-in webhook packager does NOT work for this repo — don't use it.
+
+The `.pkgmeta` uses `move-folders` (WeakAuras pattern) because the addon lives in a `RubySlippers/` subfolder rather than at the repo root. The packager needs this to find the TOC file in the subdirectory.
 
 To publish a release:
 1. Commit and push all changes
-2. Tag: `git tag 1.2.0 && git push --tags`
-3. CurseForge webhook triggers automatic packaging
+2. Tag and push: `git tag 1.2.0 && git push --tags`
+3. GitHub Actions builds the zip and uploads to CurseForge + creates a GitHub Release
 
 Tag naming determines release type:
 - `1.2.0` → Release
 - `1.2.0-beta1` → Beta
 - `1.2.0-alpha1` → Alpha
-- Untagged pushes → Alpha
+
+Required GitHub repo secret: `CF_API_KEY` (CurseForge API token). `GITHUB_TOKEN` is provided automatically.
 
 CurseForge project: https://authors.curseforge.com/#/projects/1469357
 GitHub repo: https://github.com/mckalexee/ruby-slippers
