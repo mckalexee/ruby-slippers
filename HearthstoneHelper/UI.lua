@@ -242,6 +242,47 @@ function ns:UpdateButtonDisplay()
 end
 
 -- ------------------------------------
+-- Managed macro: keeps #showtooltip in sync with the queued hearthstone
+-- ------------------------------------
+local MACRO_NAME = "HS Random"
+local MACRO_ICON = 134400 -- INV_Misc_QuestionMark (auto-resolves from #showtooltip)
+local MACRO_BODY_TEMPLATE = "#showtooltip item:%d\n/click HearthstoneHelperButton"
+
+local function UpdateMacro()
+    if InCombatLockdown() then return end
+    local idx = GetMacroIndexByName(MACRO_NAME)
+    if idx == 0 then return end
+
+    local currentID = GetCurrentButtonHearthstoneID()
+    if currentID then
+        EditMacro(idx, nil, nil, format(MACRO_BODY_TEMPLATE, currentID))
+    end
+end
+
+-- Create or delete the managed macro based on the setting
+function ns:SyncMacro()
+    if InCombatLockdown() then return end
+    local enabled = self.db and self.db.createMacro
+    local idx = GetMacroIndexByName(MACRO_NAME)
+
+    if enabled and idx == 0 then
+        local numGlobal = GetNumMacros()
+        if numGlobal >= MAX_ACCOUNT_MACROS then
+            ns.Print("Cannot create macro — general macro slots are full.")
+            return
+        end
+        local currentID = GetCurrentButtonHearthstoneID()
+        local body = currentID and format(MACRO_BODY_TEMPLATE, currentID)
+            or "#showtooltip\n/click HearthstoneHelperButton"
+        CreateMacro(MACRO_NAME, MACRO_ICON, body)
+        ns.Print("Macro \"" .. MACRO_NAME .. "\" created. Drag it to your action bar from the macro panel (Esc > Macros).")
+    elseif not enabled and idx > 0 then
+        DeleteMacro(idx)
+        ns.Print("Macro \"" .. MACRO_NAME .. "\" removed.")
+    end
+end
+
+-- ------------------------------------
 -- Pick and set a new random hearthstone on the button
 -- ------------------------------------
 function ns:SetRandomHearthstoneOnButton()
@@ -257,6 +298,7 @@ function ns:SetRandomHearthstoneOnButton()
         end
     end
     ns:UpdateButtonDisplay()
+    UpdateMacro()
 end
 
 -- ------------------------------------
@@ -344,6 +386,11 @@ SlashCmdList["HEARTHSTONEHELPER"] = function(msg)
         if ns.settingsCategory then
             Settings.OpenToCategory(ns.settingsCategory:GetID())
         end
+    elseif msg == "macro" then
+        print("|cff00ccffHearthstone Helper:|r Use /hs config to enable or disable the managed macro.")
+        if ns.settingsCategory then
+            Settings.OpenToCategory(ns.settingsCategory:GetID())
+        end
     elseif msg == "collection" or msg == "list" then
         C_AddOns.LoadAddOn("Blizzard_Collections")
         if CollectionsJournal then
@@ -364,6 +411,7 @@ SlashCmdList["HEARTHSTONEHELPER"] = function(msg)
         print("  /hs lock / unlock - Lock or unlock button position")
         print("  /hs random - Pick a new random hearthstone")
         print("  /hs scale <0.5-2.0> - Set button scale")
+        print("  /hs macro - Managed macro settings")
         print("  /hs collection - Open hearthstone collection")
         print("  /hs config - Open settings")
     end
@@ -408,6 +456,8 @@ ns:RegisterCallback("ADDON_READY", function()
     if ns.db.buttonShown ~= false then
         ns:ShowButton()
     end
+    -- Create or sync the managed macro if enabled
+    ns:SyncMacro()
 end)
 
 -- Refresh button when hearthstone data changes

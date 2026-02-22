@@ -15,6 +15,7 @@ local defaults = {
     buttonScale = 1.0,
     buttonShown = true,
     buttonLocked = false,
+    createMacro = false,
     showMinimap = true,
     buttonPosition = nil,
 }

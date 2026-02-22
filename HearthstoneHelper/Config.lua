@@ -105,6 +105,23 @@ function ns:InitConfig()
             "Adjust the scale of the hearthstone button.")
     end
 
+    -- Create managed macro
+    do
+        local setting = Settings.RegisterAddOnSetting(category,
+            "Create Action Bar Macro",
+            "createMacro",
+            db,
+            Settings.VarType.Boolean,
+            "Create Action Bar Macro",
+            false
+        )
+        setting:SetValueChangedCallback(function()
+            ns:SyncMacro()
+        end)
+        Settings.CreateCheckbox(category, setting,
+            "Create and manage an \"HS Random\" macro that you can place on your action bar. The macro icon automatically updates to show the next queued hearthstone.")
+    end
+
     -- Lock button position
     do
         local setting = Settings.RegisterAddOnSetting(category,

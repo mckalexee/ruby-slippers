@@ -107,6 +107,7 @@ Files share state through the addon namespace: `local addonName, ns = ...` at th
     buttonShown = true,
     buttonScale = 1.0,
     buttonLocked = false,
+    createMacro = false,
     showMinimap = true,
     buttonPosition = nil,  -- {point, relPoint, x, y}
 }
@@ -187,6 +188,7 @@ The lookup tables (`AllHearthstoneIDs`, `HomeHearthstoneIDs`) are built automati
 | `/hs lock` / `/hs unlock` | Lock or unlock button dragging |
 | `/hs random` | Pick a new random hearthstone |
 | `/hs scale <0.5-2.0>` | Set button scale |
+| `/hs macro` | Open settings for managed macro |
 | `/hs collection` | Open Collections Journal |
 | `/hs config` | Open settings panel |
 | `/hs help` | Show command list |
