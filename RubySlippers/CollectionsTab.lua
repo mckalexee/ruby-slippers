@@ -140,7 +140,7 @@ local function ShowContextMenu(cellFrame, itemID)
         end
 
         if isCategoryControlled then
-            rootDescription:CreateButton("Controlled by Settings (/hs config)")
+            rootDescription:CreateButton("Controlled by Settings (/rs config)")
         elseif isExcluded then
             rootDescription:CreateButton("Include in Random", function()
                 ns:ToggleExcluded(itemID)
@@ -157,7 +157,7 @@ end
 -- Create a single grid cell (SecureActionButton for toy use)
 -- ------------------------------------
 local function CreateCell(parent, index)
-    local btn = CreateFrame("Button", "HSHelperCell" .. index, parent, "SecureActionButtonTemplate")
+    local btn = CreateFrame("Button", "RSCell" .. index, parent, "SecureActionButtonTemplate")
     btn:SetSize(BUTTON_SIZE, BUTTON_SIZE)
     btn:RegisterForClicks("LeftButtonUp", "RightButtonUp")
     btn:SetAttribute("useOnKeyDown", false)
@@ -464,11 +464,11 @@ function ns:InitCollectionsTab()
     -- Create the panel frame with PortraitFrameTemplate (provides its own
     -- NineSlice, PortraitContainer, CloseButton, TitleContainer chrome).
     -- SecureTabs will manage show/hide and calls SetAllPoints(true) + SetFrameLevel(+600).
-    panel = CreateFrame("Frame", "HearthstoneHelperPanel", CollectionsJournal, "PortraitFrameTemplate")
+    panel = CreateFrame("Frame", "RubySlippersPanel", CollectionsJournal, "PortraitFrameTemplate")
     panel:Hide()
     panel:SetAllPoints()
     panel:SetPortraitToAsset("Interface\\Icons\\INV_Misc_Rune_01")
-    panel:SetTitle("Hearthstone Helper")
+    panel:SetTitle("Ruby Slippers")
 
     -- Mouse blocker to prevent clicks reaching content underneath
     panel:EnableMouse(true)
@@ -494,7 +494,7 @@ function ns:InitCollectionsTab()
     progressText:SetText("0 / 0")
 
     -- === Search Box ===
-    local searchBox = CreateFrame("EditBox", "HSHelperSearchBox", panel, "SearchBoxTemplate")
+    local searchBox = CreateFrame("EditBox", "RSSearchBox", panel, "SearchBoxTemplate")
     searchBox:SetSize(115, 20)
     searchBox:SetPoint("TOPRIGHT", panel, "TOPRIGHT", -107, -35)
     searchBox:SetScript("OnTextChanged", function(self)
@@ -505,7 +505,7 @@ function ns:InitCollectionsTab()
     end)
 
     -- === Filter dropdown (Collected/Uncollected) ===
-    local filterBtn = CreateFrame("DropdownButton", "HSHelperFilterBtn", panel, "WowStyle1FilterDropdownTemplate")
+    local filterBtn = CreateFrame("DropdownButton", "RSFilterBtn", panel, "WowStyle1FilterDropdownTemplate")
     filterBtn:SetPoint("TOPRIGHT", panel, "TOPRIGHT", -12, -35)
     filterBtn:SetWidth(90)
     filterBtn.Text:SetText("Filter")

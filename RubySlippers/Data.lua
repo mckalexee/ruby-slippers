@@ -1,7 +1,7 @@
 local _, ns = ...
 
 -- =============================================================================
--- Hearthstone Helper - Data
+-- Ruby Slippers - Data
 -- All known hearthstone toy IDs with metadata
 -- =============================================================================
 

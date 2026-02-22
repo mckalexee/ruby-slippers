@@ -1,7 +1,7 @@
 local _, ns = ...
 
 -- =============================================================================
--- Hearthstone Helper - Config
+-- Ruby Slippers - Config
 -- Settings panel using the modern Settings API (10.0+)
 -- =============================================================================
 
@@ -9,7 +9,7 @@ function ns:InitConfig()
     local db = self.db
     if not db then return end
 
-    local category = Settings.RegisterVerticalLayoutCategory("Hearthstone Helper")
+    local category = Settings.RegisterVerticalLayoutCategory("Ruby Slippers")
 
     -- Include Default Hearthstone (bag item) in random
     do
@@ -97,7 +97,7 @@ function ns:InitConfig()
             end
         end)
         Settings.CreateCheckbox(category, setting,
-            "Show the floating hearthstone button on screen. You can also use /hs show and /hs hide, or use the action bar macro instead.")
+            "Show the floating hearthstone button on screen. You can also use /rs show and /rs hide, or use the action bar macro instead.")
     end
 
     -- Button scale

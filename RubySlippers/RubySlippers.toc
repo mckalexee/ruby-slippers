@@ -1,14 +1,14 @@
 ## Interface: 120001
-## Title: Hearthstone Helper
+## Title: Ruby Slippers
 ## Notes: Track your hearthstone collection and use a random hearthstone with one click
-## Author: HearthstoneHelper
+## Author: RubySlippers
 ## Version: 1.0.0
-## SavedVariables: HearthstoneHelperDB
+## SavedVariables: RubySlippersDB
 ## IconTexture: Interface\Icons\INV_Misc_Rune_01
 ## Category: Collections
-## AddonCompartmentFunc: HearthstoneHelper_OnAddonCompartmentClick
-## AddonCompartmentFuncOnEnter: HearthstoneHelper_OnAddonCompartmentEnter
-## AddonCompartmentFuncOnLeave: HearthstoneHelper_OnAddonCompartmentLeave
+## AddonCompartmentFunc: RubySlippers_OnAddonCompartmentClick
+## AddonCompartmentFuncOnEnter: RubySlippers_OnAddonCompartmentEnter
+## AddonCompartmentFuncOnLeave: RubySlippers_OnAddonCompartmentLeave
 
 #@no-lib-strip@
 Libs\LibStub\LibStub.lua

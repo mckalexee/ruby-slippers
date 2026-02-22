@@ -12,16 +12,16 @@ ignore = {
 
 globals = {
     -- SavedVariables
-    "HearthstoneHelperDB",
+    "RubySlippersDB",
 
     -- Addon Compartment functions (referenced by TOC metadata)
-    "HearthstoneHelper_OnAddonCompartmentClick",
-    "HearthstoneHelper_OnAddonCompartmentEnter",
-    "HearthstoneHelper_OnAddonCompartmentLeave",
+    "RubySlippers_OnAddonCompartmentClick",
+    "RubySlippers_OnAddonCompartmentEnter",
+    "RubySlippers_OnAddonCompartmentLeave",
 
     -- Slash command globals
-    "SLASH_HEARTHSTONEHELPER1",
-    "SLASH_HEARTHSTONEHELPER2",
+    "SLASH_RUBYSLIPPERS1",
+    "SLASH_RUBYSLIPPERS2",
 
     -- Mutated globals
     "SlashCmdList",
@@ -48,6 +48,22 @@ read_globals = {
     "PlayerHasToy",
     "GetItemCooldown",
     "C_ToyBox",
+
+    -- Item / Container API
+    "GetItemCount",
+    "C_Item",
+    "C_Container",
+
+    -- Menu API
+    "MenuUtil",
+
+    -- Macro API
+    "GetNumMacros",
+    "GetMacroIndexByName",
+    "CreateMacro",
+    "EditMacro",
+    "DeleteMacro",
+    "MAX_ACCOUNT_MACROS",
 
     -- Collections Journal
     "CollectionsJournal",

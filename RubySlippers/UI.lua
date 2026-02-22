@@ -3,7 +3,7 @@ local _, ns = ...
 -- ============================================================
 -- UI.lua - Secure Action Button & Floating Frame
 -- Creates a movable floating button that uses a random hearthstone
--- on click. Supports /click HearthstoneHelperButton macro.
+-- on click. Supports /click RubySlippersButton macro.
 -- ============================================================
 
 -- ------------------------------------
@@ -19,7 +19,7 @@ local BUTTON_BACKDROP = {
 -- ------------------------------------
 -- Container frame (movable, has border)
 -- ------------------------------------
-local frame = CreateFrame("Frame", "HearthstoneHelperButtonFrame", UIParent, "BackdropTemplate")
+local frame = CreateFrame("Frame", "RubySlippersButtonFrame", UIParent, "BackdropTemplate")
 frame:SetSize(52, 52)
 frame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
 frame:SetBackdrop(BUTTON_BACKDROP)
@@ -49,7 +49,7 @@ end)
 -- ------------------------------------
 -- Secure action button (global name for /click macro)
 -- ------------------------------------
-local btn = CreateFrame("Button", "HearthstoneHelperButton", frame, "SecureActionButtonTemplate")
+local btn = CreateFrame("Button", "RubySlippersButton", frame, "SecureActionButtonTemplate")
 btn:SetSize(44, 44)
 btn:SetPoint("CENTER", frame, "CENTER", 0, 0)
 btn:RegisterForClicks("AnyUp")
@@ -169,7 +169,7 @@ end)
 -- ------------------------------------
 btn:SetScript("OnEnter", function(self)
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-    GameTooltip:AddLine("Hearthstone Helper", 1, 1, 1)
+    GameTooltip:AddLine("Ruby Slippers", 1, 1, 1)
     GameTooltip:AddLine("Click to use a random hearthstone", 0.8, 0.8, 0.8)
     GameTooltip:AddLine("Right-click to open collection", 0.5, 0.8, 1)
 
@@ -195,7 +195,7 @@ btn:SetScript("OnEnter", function(self)
     end
 
     GameTooltip:AddLine(" ")
-    GameTooltip:AddLine("/click HearthstoneHelperButton", 0.5, 0.5, 0.5)
+    GameTooltip:AddLine("/click RubySlippersButton", 0.5, 0.5, 0.5)
 
     if ns.db and not ns.db.buttonLocked then
         GameTooltip:AddLine("Drag to move", 0.5, 0.5, 0.5)
@@ -246,7 +246,7 @@ end
 -- ------------------------------------
 local MACRO_NAME = "HS Random"
 local MACRO_ICON = 134400 -- INV_Misc_QuestionMark (auto-resolves from #showtooltip)
-local MACRO_BODY_TEMPLATE = "#showtooltip item:%d\n/click HearthstoneHelperButton"
+local MACRO_BODY_TEMPLATE = "#showtooltip item:%d\n/click RubySlippersButton"
 
 local function UpdateMacro()
     if InCombatLockdown() then return end
@@ -273,7 +273,7 @@ function ns:SyncMacro()
         end
         local currentID = GetCurrentButtonHearthstoneID()
         local body = currentID and format(MACRO_BODY_TEMPLATE, currentID)
-            or "#showtooltip\n/click HearthstoneHelperButton"
+            or "#showtooltip\n/click RubySlippersButton"
         CreateMacro(MACRO_NAME, MACRO_ICON, body)
         ns.Print("Macro \"" .. MACRO_NAME .. "\" created. Drag it to your action bar from the macro panel (Esc > Macros).")
     elseif not enabled and idx > 0 then
@@ -352,11 +352,11 @@ function ns:SetButtonScale(scale)
 end
 
 -- ------------------------------------
--- Slash commands: /hs and /hearthstone
+-- Slash commands: /rs and /rubyslippers
 -- ------------------------------------
-SLASH_HEARTHSTONEHELPER1 = "/hs"
-SLASH_HEARTHSTONEHELPER2 = "/hearthstone"
-SlashCmdList["HEARTHSTONEHELPER"] = function(msg)
+SLASH_RUBYSLIPPERS1 = "/rs"
+SLASH_RUBYSLIPPERS2 = "/rubyslippers"
+SlashCmdList["RUBYSLIPPERS"] = function(msg)
     msg = strtrim(msg or ""):lower()
 
     if msg == "" or msg == "toggle" then
@@ -369,17 +369,17 @@ SlashCmdList["HEARTHSTONEHELPER"] = function(msg)
         if ns.db then ns.db.buttonShown = false end
     elseif msg == "lock" then
         ns:SetButtonLocked(true)
-        print("|cff00ccffHearthstone Helper:|r Button locked.")
+        print("|cff00ccffRuby Slippers:|r Button locked.")
     elseif msg == "unlock" then
         ns:SetButtonLocked(false)
-        print("|cff00ccffHearthstone Helper:|r Button unlocked. Drag to move.")
+        print("|cff00ccffRuby Slippers:|r Button unlocked. Drag to move.")
     elseif msg == "random" or msg == "rand" then
         ns:SetRandomHearthstoneOnButton()
         local currentID = GetCurrentButtonHearthstoneID()
         if currentID then
             local hsName = GetHearthstoneName(currentID)
             if hsName then
-                print("|cff00ccffHearthstone Helper:|r Next hearthstone: " .. hsName)
+                print("|cff00ccffRuby Slippers:|r Next hearthstone: " .. hsName)
             end
         end
     elseif msg == "config" or msg == "options" then
@@ -387,7 +387,7 @@ SlashCmdList["HEARTHSTONEHELPER"] = function(msg)
             Settings.OpenToCategory(ns.settingsCategory:GetID())
         end
     elseif msg == "macro" then
-        print("|cff00ccffHearthstone Helper:|r Use /hs config to enable or disable the managed macro.")
+        print("|cff00ccffRuby Slippers:|r Use /rs config to enable or disable the managed macro.")
         if ns.settingsCategory then
             Settings.OpenToCategory(ns.settingsCategory:GetID())
         end
@@ -400,20 +400,20 @@ SlashCmdList["HEARTHSTONEHELPER"] = function(msg)
         local scaleVal = tonumber(strsub(msg, 7))
         if scaleVal then
             ns:SetButtonScale(scaleVal)
-            print("|cff00ccffHearthstone Helper:|r Button scale set to " .. scaleVal)
+            print("|cff00ccffRuby Slippers:|r Button scale set to " .. scaleVal)
         else
-            print("|cff00ccffHearthstone Helper:|r Usage: /hs scale 0.5-2.0")
+            print("|cff00ccffRuby Slippers:|r Usage: /rs scale 0.5-2.0")
         end
     else
-        print("|cff00ccffHearthstone Helper:|r Commands:")
-        print("  /hs - Toggle button visibility")
-        print("  /hs show / hide - Show or hide button")
-        print("  /hs lock / unlock - Lock or unlock button position")
-        print("  /hs random - Pick a new random hearthstone")
-        print("  /hs scale <0.5-2.0> - Set button scale")
-        print("  /hs macro - Managed macro settings")
-        print("  /hs collection - Open hearthstone collection")
-        print("  /hs config - Open settings")
+        print("|cff00ccffRuby Slippers:|r Commands:")
+        print("  /rs - Toggle button visibility")
+        print("  /rs show / hide - Show or hide button")
+        print("  /rs lock / unlock - Lock or unlock button position")
+        print("  /rs random - Pick a new random hearthstone")
+        print("  /rs scale <0.5-2.0> - Set button scale")
+        print("  /rs macro - Managed macro settings")
+        print("  /rs collection - Open hearthstone collection")
+        print("  /rs config - Open settings")
     end
 end
 
@@ -421,18 +421,18 @@ end
 -- Addon Compartment support (minimap dropdown in modern WoW)
 -- These globals are read from the TOC metadata
 -- ------------------------------------
-function HearthstoneHelper_OnAddonCompartmentClick(_addonName, _buttonName)
+function RubySlippers_OnAddonCompartmentClick(_addonName, _buttonName)
     ns:ToggleButton()
 end
 
-function HearthstoneHelper_OnAddonCompartmentEnter(_addonName, menuButtonFrame)
+function RubySlippers_OnAddonCompartmentEnter(_addonName, menuButtonFrame)
     GameTooltip:SetOwner(menuButtonFrame, "ANCHOR_RIGHT")
-    GameTooltip:AddLine("Hearthstone Helper", 1, 1, 1)
+    GameTooltip:AddLine("Ruby Slippers", 1, 1, 1)
     GameTooltip:AddLine("Click to toggle button", 0.8, 0.8, 0.8)
     GameTooltip:Show()
 end
 
-function HearthstoneHelper_OnAddonCompartmentLeave(_addonName, _menuButtonFrame)
+function RubySlippers_OnAddonCompartmentLeave(_addonName, _menuButtonFrame)
     GameTooltip:Hide()
 end
 

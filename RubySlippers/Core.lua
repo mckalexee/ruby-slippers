@@ -1,7 +1,7 @@
 local addonName, ns = ...
 
 -- =============================================================================
--- Hearthstone Helper - Core
+-- Ruby Slippers - Core
 -- Addon initialization, hearthstone scanning, random selection, slash commands
 -- =============================================================================
 
@@ -56,7 +56,7 @@ end
 
 -- Utility print
 function ns.Print(msg)
-    print(format("|cFF33FF99[Hearthstone Helper]|r %s", msg))
+    print(format("|cFF33FF99[Ruby Slippers]|r %s", msg))
 end
 
 -- Owned hearthstones cache
@@ -228,11 +228,11 @@ function events:ADDON_LOADED(loadedAddon)
     if loadedAddon ~= addonName then return end
 
     -- Initialize saved variables
-    if not HearthstoneHelperDB then
-        HearthstoneHelperDB = {}
+    if not RubySlippersDB then
+        RubySlippersDB = {}
     end
-    ApplyDefaults(HearthstoneHelperDB, defaults)
-    ns.db = HearthstoneHelperDB
+    ApplyDefaults(RubySlippersDB, defaults)
+    ns.db = RubySlippersDB
 
     self:UnregisterEvent("ADDON_LOADED")
 

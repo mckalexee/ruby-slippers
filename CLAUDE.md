@@ -1,4 +1,4 @@
-# Hearthstone Helper - WoW Addon
+# Ruby Slippers - WoW Addon
 
 ## What This Is
 
@@ -38,8 +38,8 @@ When in doubt about any WoW API behavior, **check the addon guide first** before
 ## Project Structure
 
 ```
-HearthstoneHelper/           <-- This folder goes in Interface\AddOns\
-  HearthstoneHelper.toc      Addon manifest (Interface 120001)
+RubySlippers/                <-- This folder goes in Interface\AddOns\
+  RubySlippers.toc           Addon manifest (Interface 120001)
   Libs/
     LibStub/LibStub.lua      Standard WoW library loader
     SecureTabs-2.0/           Adds tabs to secure panels without taint (by Jaliborc)
@@ -70,7 +70,7 @@ Files share state through the addon namespace: `local addonName, ns = ...` at th
 | `ns.BagItemHearthstoneIDs` | Data.lua | `{[itemID] = true}` bag item (non-toy) subset |
 | `ns.DefaultHearthstoneID` | Data.lua | 6948 — the default Hearthstone (bag item, not a toy) |
 | `ns:IsBagItem(id)` | Data.lua | Check if a hearthstone is a bag item vs toy |
-| `ns.db` | Core.lua | Reference to `HearthstoneHelperDB` SavedVariables |
+| `ns.db` | Core.lua | Reference to `RubySlippersDB` SavedVariables |
 | `ns.ownedHearthstones` | Core.lua | Array of owned hearthstone info tables |
 | `ns.ownedHearthstoneMap` | Core.lua | `{[itemID] = true}` for owned |
 | `ns:ScanOwnedHearthstones()` | Core.lua | Refresh ownership data from `PlayerHasToy()` / `GetItemCount()` |
@@ -95,7 +95,7 @@ Files share state through the addon namespace: `local addonName, ns = ...` at th
 | `HEARTHSTONES_UPDATED` | After any ownership rescan or favorite/exclude toggle |
 | `SETTINGS_CHANGED` | After any setting is modified in the Config panel |
 
-### SavedVariables (`HearthstoneHelperDB`)
+### SavedVariables (`RubySlippersDB`)
 
 ```lua
 {
@@ -128,7 +128,7 @@ The solution: `SecureActionButtonTemplate` with `type="toy"`, `toy=itemID` for t
 2. `PreClick` runs before the secure action handler
 3. `SetAttribute()` is allowed when `InCombatLockdown()` is false
 
-Users can bind this to a macro: `/click HearthstoneHelperButton`
+Users can bind this to a macro: `/click RubySlippersButton`
 
 ### Key WoW APIs Used
 
@@ -163,7 +163,7 @@ The Collections Journal tab uses SecureTabs-2.0 to avoid taint. Key points:
 - A cover frame overlays Blizzard panel content when our tab is active
 - The tab's `OnSelect`/`OnDeselect` callbacks manage panel visibility
 
-If the tab causes taint issues, the fallback is a standalone `PortraitFrameTemplate` frame with `/hs collection` to open it.
+If the tab causes taint issues, the fallback is a standalone `PortraitFrameTemplate` frame with `/rs collection` to open it.
 
 ### Collection Panel Layout
 
@@ -183,19 +183,19 @@ The lookup tables (`AllHearthstoneIDs`, `HomeHearthstoneIDs`) are built automati
 
 | Command | Action |
 |---------|--------|
-| `/hs` | Toggle floating button visibility |
-| `/hs show` / `/hs hide` | Show or hide the button |
-| `/hs lock` / `/hs unlock` | Lock or unlock button dragging |
-| `/hs random` | Pick a new random hearthstone |
-| `/hs scale <0.5-2.0>` | Set button scale |
-| `/hs macro` | Open settings for managed macro |
-| `/hs collection` | Open Collections Journal |
-| `/hs config` | Open settings panel |
-| `/hs help` | Show command list |
+| `/rs` | Toggle floating button visibility |
+| `/rs show` / `/rs hide` | Show or hide the button |
+| `/rs lock` / `/rs unlock` | Lock or unlock button dragging |
+| `/rs random` | Pick a new random hearthstone |
+| `/rs scale <0.5-2.0>` | Set button scale |
+| `/rs macro` | Open settings for managed macro |
+| `/rs collection` | Open Collections Journal |
+| `/rs config` | Open settings panel |
+| `/rs help` | Show command list |
 
 ## Installation
 
-Copy the `HearthstoneHelper/` folder into `World of Warcraft\_retail_\Interface\AddOns\`.
+Copy the `RubySlippers/` folder into `World of Warcraft\_retail_\Interface\AddOns\`.
 
 ## Debugging
 
