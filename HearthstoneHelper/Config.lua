@@ -79,6 +79,27 @@ function ns:InitConfig()
             "Only use favorited hearthstones when selecting a random hearthstone. Favorites are shared with the Blizzard Toy Box — right-click a hearthstone in either location to toggle.")
     end
 
+    -- Show floating button
+    do
+        local setting = Settings.RegisterAddOnSetting(category,
+            "Show Floating Button",
+            "buttonShown",
+            db,
+            Settings.VarType.Boolean,
+            "Show Floating Button",
+            true
+        )
+        setting:SetValueChangedCallback(function(_, val)
+            if val then
+                ns:ShowButton()
+            else
+                ns:HideButton()
+            end
+        end)
+        Settings.CreateCheckbox(category, setting,
+            "Show the floating hearthstone button on screen. You can also use /hs show and /hs hide, or use the action bar macro instead.")
+    end
+
     -- Button scale
     do
         local setting = Settings.RegisterAddOnSetting(category,
