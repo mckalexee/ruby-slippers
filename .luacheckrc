@@ -1,72 +1,87 @@
 std = "lua51"
 max_line_length = false
-self = false -- Don't warn about unused self (standard WoW addon pattern)
 
--- Self-shadowing is standard WoW pattern: nested OnClick/OnEnter handlers
--- inside ns:Method() legitimately shadow the outer self with the frame self.
+exclude_files = {
+    "Libs/**",
+}
+
 ignore = {
-    "432/self", -- shadowing upvalue self (nested handlers inside ns:Method)
-    "212/self", -- unused self arg in SetScript closures (frame captured via closure)
+    "212/self",   -- Unused argument 'self' (common in WoW methods)
+    "212/event",  -- Unused argument 'event' (common in event handlers)
 }
 
--- Third-party libraries: don't lint code we don't own
-exclude_files = {"**/Libs/**"}
-
--- WoW globals that addons can write to
 globals = {
-    "SLASH_HEARTHSTONEHELPER1",
-    "SLASH_HEARTHSTONEHELPER2",
+    -- SavedVariables
+    "RubySlippersDB",
+
+    -- Addon Compartment functions (referenced by TOC metadata)
+    "RubySlippers_OnAddonCompartmentClick",
+    "RubySlippers_OnAddonCompartmentEnter",
+    "RubySlippers_OnAddonCompartmentLeave",
+
+    -- Slash command globals
+    "SLASH_RUBYSLIPPERS1",
+    "SLASH_RUBYSLIPPERS2",
+
+    -- Mutated globals
     "SlashCmdList",
-    "HearthstoneHelperDB",
-    "HearthstoneHelper_OnAddonCompartmentClick",
-    "HearthstoneHelper_OnAddonCompartmentEnter",
-    "HearthstoneHelper_OnAddonCompartmentLeave",
 }
 
--- WoW globals that addons can read (API, frames, utilities)
 read_globals = {
+    -- Libraries
+    "LibStub",
+
     -- Lua extensions provided by WoW
-    "wipe",
-    "tinsert",
-    "tremove",
-    "strtrim",
-    "strsub",
-    "format",
+    "strtrim", "strsub", "format", "wipe", "tinsert",
     "CopyTable",
 
-    -- WoW frame system
+    -- WoW Frame API
     "CreateFrame",
     "UIParent",
-    "GameTooltip",
-
-    -- WoW API functions
     "InCombatLockdown",
-    "GetTime",
-    "GetItemCooldown",
-    "PlayerHasToy",
     "ShowUIPanel",
     "HideUIPanel",
+    "GetTime",
+    "print",
 
-    -- WoW namespaces
+    -- Toy API
+    "PlayerHasToy",
+    "GetItemCooldown",
     "C_ToyBox",
-    "C_AddOns",
-    "C_Timer",
 
-    -- Settings API (10.0+)
+    -- Item / Container API
+    "GetItemCount",
+    "C_Item",
+    "C_Container",
+
+    -- Menu API
+    "MenuUtil",
+
+    -- Macro API
+    "GetNumMacros",
+    "GetMacroIndexByName",
+    "CreateMacro",
+    "EditMacro",
+    "DeleteMacro",
+    "MAX_ACCOUNT_MACROS",
+
+    -- Collections Journal
+    "CollectionsJournal",
+
+    -- Addon API
+    "C_AddOns",
+
+    -- Settings API
     "Settings",
     "MinimalSliderWithSteppersMixin",
 
-    -- UI templates / mixins
+    -- UI Templates / Mixins
     "SearchBoxTemplate_OnTextChanged",
-    "MenuUtil",
 
     -- Sound
     "SOUNDKIT",
     "PlaySound",
 
-    -- Blizzard frames (loaded on demand)
-    "CollectionsJournal",
-
-    -- Libraries
-    "LibStub",
+    -- Tooltip
+    "GameTooltip",
 }
