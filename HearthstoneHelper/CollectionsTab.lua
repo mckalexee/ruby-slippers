@@ -104,6 +104,7 @@ local function ShowContextMenu(cellFrame, itemID)
 
     local isFavorite = ns.db and ns.db.favorites and ns.db.favorites[itemID]
     local isExcluded = ns.db and ns.db.excluded and ns.db.excluded[itemID]
+    local isCategoryControlled = itemID == ns.GarrisonHearthstoneID or itemID == ns.DalaranHearthstoneID
 
     MenuUtil.CreateContextMenu(cellFrame, function(_, rootDescription)
         if isFavorite then
@@ -116,7 +117,9 @@ local function ShowContextMenu(cellFrame, itemID)
             end)
         end
 
-        if isExcluded then
+        if isCategoryControlled then
+            rootDescription:CreateButton("Controlled by Settings (/hs config)")
+        elseif isExcluded then
             rootDescription:CreateButton("Include in Random", function()
                 ns:ToggleExcluded(itemID)
             end)
@@ -190,10 +193,25 @@ local function CreateCell(parent, index)
 
     -- Favorite star - atlas
     local favStar = btn:CreateTexture(nil, "OVERLAY", nil, 2)
-    favStar:SetPoint("TOPLEFT", btn, "TOPLEFT", -12, 13)
-    favStar:SetAtlas("collections-icon-favorites")
+    favStar:SetSize(16, 16)
+    favStar:SetPoint("TOPLEFT", iconTex, "TOPLEFT", -4, 4)
+    favStar:SetAtlas("collections-icon-favorites", true)
     favStar:Hide()
     btn.favoriteStar = favStar
+
+    -- Excluded overlay (red tint + X icon)
+    local excludedOverlay = btn:CreateTexture(nil, "ARTWORK", nil, 2)
+    excludedOverlay:SetAllPoints(iconTex)
+    excludedOverlay:SetColorTexture(0.5, 0, 0, 0.4)
+    excludedOverlay:Hide()
+    btn.excludedOverlay = excludedOverlay
+
+    local excludedIcon = btn:CreateTexture(nil, "OVERLAY", nil, 2)
+    excludedIcon:SetSize(20, 20)
+    excludedIcon:SetPoint("BOTTOMRIGHT", iconTex, "BOTTOMRIGHT", 2, -2)
+    excludedIcon:SetAtlas("transmog-icon-hidden", true)
+    excludedIcon:Hide()
+    btn.excludedIcon = excludedIcon
 
     -- Cooldown frame
     local cooldown = CreateFrame("Cooldown", nil, btn, "CooldownFrameTemplate")
@@ -282,6 +300,15 @@ local function UpdateCell(cell, data)
 
     local isOwned = ns.ownedHearthstoneMap and ns.ownedHearthstoneMap[data.itemID] or false
     local isFavorite = ns.db and ns.db.favorites and ns.db.favorites[data.itemID] or false
+    -- Effective exclusion: per-item OR category setting
+    local isExcluded = ns.db and ns.db.excluded and ns.db.excluded[data.itemID] or false
+    if not isExcluded and ns.db then
+        if data.category == "garrison" and not ns.db.includeGarrison then
+            isExcluded = true
+        elseif data.category == "dalaran" and not ns.db.includeDalaran then
+            isExcluded = true
+        end
+    end
 
     -- Get toy icon from API
     local _, _, toyIcon = C_ToyBox.GetToyInfo(data.itemID)
@@ -301,6 +328,10 @@ local function UpdateCell(cell, data)
         -- Favorite star
         cell.favoriteStar:SetShown(isFavorite)
 
+        -- Excluded overlay
+        cell.excludedOverlay:SetShown(isExcluded)
+        cell.excludedIcon:SetShown(isExcluded)
+
         -- Cooldown
         local startTime, duration, enable = GetItemCooldown(data.itemID)
         if duration and duration > 0 and enable == 1 then
@@ -319,6 +350,8 @@ local function UpdateCell(cell, data)
         cell.name:SetTextColor(0.33, 0.27, 0.20, 1)
         cell.name:SetShadowColor(0, 0, 0, 0.33)
         cell.favoriteStar:Hide()
+        cell.excludedOverlay:Hide()
+        cell.excludedIcon:Hide()
         cell.cooldown:Clear()
     end
 

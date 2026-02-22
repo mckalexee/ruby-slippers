@@ -18,6 +18,7 @@ function ns:InitConfig()
             "includeGarrison",
             db,
             Settings.VarType.Boolean,
+            "Include Garrison Hearthstone",
             false
         )
         setting:SetValueChangedCallback(function()
@@ -34,6 +35,7 @@ function ns:InitConfig()
             "includeDalaran",
             db,
             Settings.VarType.Boolean,
+            "Include Dalaran Hearthstone",
             false
         )
         setting:SetValueChangedCallback(function()
@@ -50,13 +52,14 @@ function ns:InitConfig()
             "favoritesOnly",
             db,
             Settings.VarType.Boolean,
+            "Favorites Only",
             false
         )
         setting:SetValueChangedCallback(function()
             ns:FireCallback("SETTINGS_CHANGED")
         end)
         Settings.CreateCheckbox(category, setting,
-            "Only use favorited hearthstones when selecting a random hearthstone.")
+            "Only use favorited hearthstones when selecting a random hearthstone. Set favorites by right-clicking hearthstones in the collection (/hs collection).")
     end
 
     -- Button scale
@@ -66,13 +69,21 @@ function ns:InitConfig()
             "buttonScale",
             db,
             Settings.VarType.Number,
+            "Button Scale",
             1.0
         )
-        setting:SetValueChangedCallback(function()
+        setting:SetValueChangedCallback(function(_, val)
+            -- Round to 1 decimal to avoid float drift (0.70000001...)
+            local rounded = math.floor(val * 10 + 0.5) / 10
+            if rounded ~= val then
+                db.buttonScale = rounded
+            end
             ns:FireCallback("SETTINGS_CHANGED")
         end)
         local options = Settings.CreateSliderOptions(0.5, 2.0, 0.1)
-        options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right)
+        options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, function(val)
+            return format("%.1f", val)
+        end)
         Settings.CreateSlider(category, setting, options,
             "Adjust the scale of the hearthstone button.")
     end
@@ -84,6 +95,7 @@ function ns:InitConfig()
             "buttonLocked",
             db,
             Settings.VarType.Boolean,
+            "Lock Button Position",
             false
         )
         setting:SetValueChangedCallback(function()

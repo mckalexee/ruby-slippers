@@ -385,3 +385,10 @@ ns:RegisterCallback("HEARTHSTONES_UPDATED", function()
         ns:SetRandomHearthstoneOnButton()
     end
 end)
+
+-- Apply settings changes live (scale, lock, etc.)
+ns:RegisterCallback("SETTINGS_CHANGED", function()
+    if ns.db then
+        frame:SetScale(ns.db.buttonScale or 1.0)
+    end
+end)
