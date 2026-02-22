@@ -1,5 +1,3 @@
-package-as: RubySlippers
-
 ignore:
   - README.md
   - CLAUDE.md
