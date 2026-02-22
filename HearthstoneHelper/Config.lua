@@ -59,7 +59,7 @@ function ns:InitConfig()
             ns:FireCallback("SETTINGS_CHANGED")
         end)
         Settings.CreateCheckbox(category, setting,
-            "Only use favorited hearthstones when selecting a random hearthstone. Set favorites by right-clicking hearthstones in the collection (/hs collection).")
+            "Only use favorited hearthstones when selecting a random hearthstone. Favorites are shared with the Blizzard Toy Box — right-click a hearthstone in either location to toggle.")
     end
 
     -- Button scale

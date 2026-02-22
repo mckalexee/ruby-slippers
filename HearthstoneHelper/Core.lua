@@ -7,7 +7,6 @@ local addonName, ns = ...
 
 -- SavedVariables defaults
 local defaults = {
-    favorites = {},
     excluded = {},
     includeGarrison = false,
     includeDalaran = false,
@@ -97,9 +96,12 @@ function ns:GetRandomHearthstone()
             dominated = true
         end
 
-        -- Check favorites-only mode
-        if not dominated and db.favoritesOnly and not db.favorites[hs.itemID] then
-            dominated = true
+        -- Check favorites-only mode (uses Blizzard's native favorites)
+        if not dominated and db.favoritesOnly then
+            local _, _, _, isFav = C_ToyBox.GetToyInfo(hs.itemID)
+            if not isFav then
+                dominated = true
+            end
         end
 
         -- Check garrison/dalaran inclusion
@@ -139,9 +141,9 @@ function ns:GetHearthstoneInfo(itemID)
         return nil
     end
 
-    local _, name, icon = C_ToyBox.GetToyInfo(itemID)
+    local _, name, icon, isFavorite = C_ToyBox.GetToyInfo(itemID)
     local isOwned = self.ownedHearthstoneMap[itemID] or false
-    local isFavorite = db.favorites[itemID] or false
+    isFavorite = isFavorite or false
     local isExcluded = db.excluded[itemID] or false
     local isOnCooldown, cooldownRemaining = self:IsOnCooldown(itemID)
 
@@ -160,14 +162,10 @@ function ns:IsOnCooldown(itemID)
     return false, 0
 end
 
--- Toggle favorite status
+-- Toggle favorite status (uses Blizzard's native toy favorite system)
 function ns:ToggleFavorite(itemID)
-    local db = self.db
-    if db.favorites[itemID] then
-        db.favorites[itemID] = nil
-    else
-        db.favorites[itemID] = true
-    end
+    local _, _, _, isFavorite = C_ToyBox.GetToyInfo(itemID)
+    C_ToyBox.SetIsFavorite(itemID, not isFavorite)
     self:FireCallback("HEARTHSTONES_UPDATED")
 end
 
@@ -204,6 +202,16 @@ function events:ADDON_LOADED(loadedAddon)
 end
 
 function events:PLAYER_ENTERING_WORLD()
+    -- Migrate old addon favorites to Blizzard's native toy favorite system
+    if ns.db.favorites then
+        for itemID in pairs(ns.db.favorites) do
+            if PlayerHasToy(itemID) then
+                C_ToyBox.SetIsFavorite(itemID, true)
+            end
+        end
+        ns.db.favorites = nil
+    end
+
     ns:ScanOwnedHearthstones()
     ns:FireCallback("ADDON_READY")
     self:UnregisterEvent("PLAYER_ENTERING_WORLD")

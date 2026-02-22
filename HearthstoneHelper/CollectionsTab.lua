@@ -71,11 +71,14 @@ local function BuildFilteredList()
         end
     end
 
-    -- Sort: owned first, then by name
+    -- Sort: owned first, favorites first within each group, then by name
     table.sort(filteredData, function(a, b)
         local aOwned = ns.ownedHearthstoneMap and ns.ownedHearthstoneMap[a.itemID] or false
         local bOwned = ns.ownedHearthstoneMap and ns.ownedHearthstoneMap[b.itemID] or false
         if aOwned ~= bOwned then return aOwned end
+        local _, _, _, aFav = C_ToyBox.GetToyInfo(a.itemID)
+        local _, _, _, bFav = C_ToyBox.GetToyInfo(b.itemID)
+        if (aFav or false) ~= (bFav or false) then return aFav or false end
         return (a.name or "") < (b.name or "")
     end)
 end
@@ -102,7 +105,7 @@ local function ShowContextMenu(cellFrame, itemID)
     local isOwned = ns.ownedHearthstoneMap and ns.ownedHearthstoneMap[itemID]
     if not isOwned then return end
 
-    local isFavorite = ns.db and ns.db.favorites and ns.db.favorites[itemID]
+    local _, _, _, isFavorite = C_ToyBox.GetToyInfo(itemID)
     local isExcluded = ns.db and ns.db.excluded and ns.db.excluded[itemID]
     local isCategoryControlled = itemID == ns.GarrisonHearthstoneID or itemID == ns.DalaranHearthstoneID
 
@@ -298,7 +301,7 @@ local function UpdateCell(cell, data)
     cell:Show()
 
     local isOwned = ns.ownedHearthstoneMap and ns.ownedHearthstoneMap[data.itemID] or false
-    local isFavorite = ns.db and ns.db.favorites and ns.db.favorites[data.itemID] or false
+    local _, _, _, isFavorite = C_ToyBox.GetToyInfo(data.itemID)
     -- Effective exclusion: per-item OR category setting
     local isExcluded = ns.db and ns.db.excluded and ns.db.excluded[data.itemID] or false
     if not isExcluded and ns.db then
