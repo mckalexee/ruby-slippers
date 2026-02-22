@@ -150,7 +150,7 @@ end
 
 -- Check if a hearthstone toy is on cooldown
 function ns:IsOnCooldown(itemID)
-    local startTime, duration, enable = GetItemCooldown(itemID)
+    local startTime, duration = GetItemCooldown(itemID)
     if startTime and startTime > 0 and duration > 0 then
         local remaining = (startTime + duration) - GetTime()
         if remaining > 0 then

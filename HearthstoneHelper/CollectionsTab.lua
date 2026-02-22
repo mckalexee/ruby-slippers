@@ -1,4 +1,4 @@
-local addonName, ns = ...
+local _, ns = ...
 
 -- ============================================================
 -- CollectionsTab.lua - Hearthstone Collection Panel
@@ -32,9 +32,12 @@ local activeOwnership = "all"
 local searchText = ""
 
 -- Panel and scroll references (set during init)
-local panel, scrollBox, scrollBar, countText
+local panel, scrollBar, countText
 local filteredData = {}
 local useButtons = {}
+
+-- Forward declarations for functions referenced in closures before their definition
+local RefreshRows, RefreshPanel
 
 -- ------------------------------------
 -- Build the filtered data list
@@ -147,7 +150,7 @@ end
 -- ------------------------------------
 -- Create a single row frame for the scroll list
 -- ------------------------------------
-local function CreateRow(parent, index)
+local function CreateRow(parent, _index)
     local row = CreateFrame("Frame", nil, parent)
     row:SetSize(PANEL_WIDTH - 40, ROW_HEIGHT)
 
@@ -355,7 +358,7 @@ local function UpdateRow(row, data, useBtnIndex)
         end
 
         -- Check cooldown
-        local startTime, duration, enable = GetItemCooldown(data.itemID)
+        local _, duration, enable = GetItemCooldown(data.itemID)
         if duration and duration > 0 and enable == 1 then
             useBtn.bg:SetColorTexture(0.4, 0.4, 0.4, 0.6)
             useBtn.text:SetText("CD")
@@ -425,9 +428,6 @@ local function GetMaxScroll()
     if totalRows <= visible then return 0 end
     return totalRows - visible
 end
-
--- Forward declarations
-local RefreshRows, RefreshPanel
 
 local function ScrollTo(offset)
     offset = math.max(0, math.min(offset, GetMaxScroll()))

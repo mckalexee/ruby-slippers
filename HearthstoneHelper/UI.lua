@@ -1,4 +1,4 @@
-local addonName, ns = ...
+local _, ns = ...
 
 -- ============================================================
 -- UI.lua - Secure Action Button & Floating Frame
@@ -141,7 +141,7 @@ btn:SetScript("OnEnter", function(self)
     if toyID then
         toyID = tonumber(toyID)
         if toyID then
-            local _, toyName, toyIcon = C_ToyBox.GetToyInfo(toyID)
+            local _, toyName = C_ToyBox.GetToyInfo(toyID)
             if toyName then
                 GameTooltip:AddLine(" ")
                 GameTooltip:AddLine("Next: " .. toyName, 0, 1, 0)
@@ -330,18 +330,18 @@ end
 -- Addon Compartment support (minimap dropdown in modern WoW)
 -- These globals are read from the TOC metadata
 -- ------------------------------------
-function HearthstoneHelper_OnAddonCompartmentClick(addonName, buttonName)
+function HearthstoneHelper_OnAddonCompartmentClick(_addonName, _buttonName)
     ns:ToggleButton()
 end
 
-function HearthstoneHelper_OnAddonCompartmentEnter(addonName, menuButtonFrame)
+function HearthstoneHelper_OnAddonCompartmentEnter(_addonName, menuButtonFrame)
     GameTooltip:SetOwner(menuButtonFrame, "ANCHOR_RIGHT")
     GameTooltip:AddLine("Hearthstone Helper", 1, 1, 1)
     GameTooltip:AddLine("Click to toggle button", 0.8, 0.8, 0.8)
     GameTooltip:Show()
 end
 
-function HearthstoneHelper_OnAddonCompartmentLeave(addonName, menuButtonFrame)
+function HearthstoneHelper_OnAddonCompartmentLeave(_addonName, _menuButtonFrame)
     GameTooltip:Hide()
 end
 

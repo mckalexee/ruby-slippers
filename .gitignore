@@ -1,5 +1,12 @@
 # Research artifacts
 research_*
 
+# Build artifacts
+*.def
+*.obj
+*.dll
+*.lib
+*.exp
+
 # Claude Code
 .claude/
