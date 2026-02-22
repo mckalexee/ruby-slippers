@@ -1,0 +1,11 @@
+package-as: RubySlippers
+
+ignore:
+  - README.md
+  - CLAUDE.md
+  - curseforge-description.md
+  - SESSION-REPORT-SecureTabs-CollectionsJournal.md
+  - research_hearthstone_data.lua
+  - research_ui_findings.md
+  - logo-prompt.txt
+  - logo.svg

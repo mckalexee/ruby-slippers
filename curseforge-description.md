@@ -1,53 +1,29 @@
-## What it does
+Click a button, use a random hearthstone. Each click selects a different one from your collection, so you get a different travel animation every time. The button icon always shows which hearthstone will be used next.
 
-Ruby Slippers picks a random hearthstone from your collection and uses it when you click the floating button. Each click picks a new one. It also adds a "Hearthstones" tab to the Collections Journal where you can see every hearthstone toy in the game, which ones you own, and where to get the rest.
+Left-click the floating button to hearth. Right-click to open the collection. Drag the button to reposition it. The button also shows cooldown time remaining.
 
-## Features
+## Hearthstone Collection
 
-**Random hearthstone button** — A movable, scalable floating button. Left-click to use a random hearthstone, right-click to open the collection. A new hearthstone is picked after each use. Supports the default bag hearthstone and all 37+ toy hearthstones.
+A "Hearthstones" tab is added to the Collections Journal with every hearthstone in the game displayed in a grid matching the Toy Box style. Owned hearthstones appear in full color with gold borders; unowned ones are grayed out with their source listed in the tooltip so you know where to get them. A progress bar at the top tracks how many you've collected.
 
-**Collections Journal tab** — Browse all hearthstones in a grid layout matching the Toy Box style. Owned hearthstones show in full color with gold borders; unowned ones are grayed out with their source listed in the tooltip. Click any owned hearthstone to use it directly, or drag it to your action bar.
+Click any owned hearthstone in the grid to use it directly, or drag it to your action bar. Right-click an owned hearthstone to favorite it or exclude it from the random rotation. Filter by collected/uncollected, or search by name or source.
 
-**Favorites and exclusions** — Right-click a hearthstone to favorite it or exclude it from the random rotation. Favorites sync with Blizzard's native toy favorites, so changes show up in both places.
+Favorites are shared with Blizzard's built-in toy favorites, so changes you make here show up in the Toy Box and vice versa.
 
-**Filters and search** — Filter by owned/unowned, search by name, or filter by category (Home, Garrison, Dalaran).
+## Random Pool Controls
 
-**Managed macro** — Optionally creates an "HS Random" account macro that you can put on your action bar. The macro icon updates automatically to show the next queued hearthstone.
+By default, the Garrison Hearthstone and Dalaran Hearthstone are excluded from the random pool because they don't go to your bound inn. The default Hearthstone (the bag item) is included. All three are controlled through settings rather than the per-item right-click menu. You can also enable a favorites-only mode that restricts the pool to just your favorited hearthstones.
 
-**Settings** — Toggle the floating button on/off, lock its position, adjust scale, enable favorites-only mode, include or exclude Garrison/Dalaran/default hearthstone from the random pool. Access via `/rs config` or the Interface options.
+Any other hearthstone can be individually excluded via right-click in the collection.
 
-**Minimap compartment** — Click the addon compartment entry to toggle the floating button.
+## Action Bar Macro
 
-## Slash Commands
+Enable "Create Action Bar Macro" in settings to get an account-wide "HS Random" macro you can drag to your action bar. The macro icon updates automatically to show which hearthstone will be used next. You can also write your own macro with `/click RubySlippersButton`.
 
-| Command | Action |
-|---------|--------|
-| `/rs` | Toggle the floating button |
-| `/rs show` / `/rs hide` | Show or hide the button |
-| `/rs lock` / `/rs unlock` | Lock or unlock button position |
-| `/rs random` | Pick a new random hearthstone |
-| `/rs scale 0.5-2.0` | Set button scale |
-| `/rs collection` | Open the Collections Journal tab |
-| `/rs config` | Open settings |
+## Commands and Access
 
-## Macro Binding
+Type `/rs` for a list of commands. `/rs config` opens settings, `/rs collection` opens the collection tab. The addon also appears in the minimap addon compartment.
 
-You can bind the button to a key by creating a macro:
-
-```
-/click RubySlippersButton
-```
-
-Or enable "Create Action Bar Macro" in settings and Ruby Slippers will manage the macro for you, including updating the tooltip icon.
-
-## Known Info
-
-- Supports WoW 12.0 (Midnight), Interface 120001
-- The default Hearthstone (item 6948) is handled as a bag item, not a toy
-- All toy hearthstones added through The War Within and Midnight are included
-- Uses SecureActionButtonTemplate — works with hardware clicks only, as required by Blizzard
-- No external dependencies beyond bundled libraries (LibStub, SecureTabs-2.0)
-
-## Reporting Bugs
+## Bugs and Feedback
 
 Open an issue on [GitHub](https://github.com/mckalexee/ruby-slippers/issues) if you run into problems or have a feature request.
