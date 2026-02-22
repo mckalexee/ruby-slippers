@@ -2,7 +2,7 @@
 ## Title: Ruby Slippers
 ## Notes: Track your hearthstone collection and use a random hearthstone with one click
 ## Author: RubySlippers
-## Version: 1.0.0
+## Version: @project-version@
 ## SavedVariables: RubySlippersDB
 ## IconTexture: Interface\Icons\INV_Misc_Rune_01
 ## Category: Collections

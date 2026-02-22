@@ -198,6 +198,24 @@ The lookup tables (`AllHearthstoneIDs`, `HomeHearthstoneIDs`) are built automati
 
 CurseForge packages the repo root as `RubySlippers/` via `.pkgmeta`. For local dev, junction the repo root into `Interface\AddOns\RubySlippers`.
 
+## Versioning and Publishing
+
+The TOC uses `@project-version@` which CurseForge's packager replaces with the git tag name. Do not hardcode a version number in the TOC.
+
+To publish a release:
+1. Commit and push all changes
+2. Tag: `git tag 1.2.0 && git push --tags`
+3. CurseForge webhook triggers automatic packaging
+
+Tag naming determines release type:
+- `1.2.0` → Release
+- `1.2.0-beta1` → Beta
+- `1.2.0-alpha1` → Alpha
+- Untagged pushes → Alpha
+
+CurseForge project: https://authors.curseforge.com/#/projects/1469357
+GitHub repo: https://github.com/mckalexee/ruby-slippers
+
 ## Debugging
 
 - **Enable Lua errors in-game**: `/console scriptErrors 1` then `/reload`. The old "Interface > Display > Lua Errors" checkbox does NOT exist in WoW 12.
