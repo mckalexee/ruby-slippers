@@ -50,6 +50,7 @@ read_globals = {
     -- WoW namespaces
     "C_ToyBox",
     "C_AddOns",
+    "C_Timer",
 
     -- Settings API (10.0+)
     "Settings",
@@ -57,6 +58,11 @@ read_globals = {
 
     -- UI templates / mixins
     "SearchBoxTemplate_OnTextChanged",
+    "MenuUtil",
+
+    -- Sound
+    "SOUNDKIT",
+    "PlaySound",
 
     -- Blizzard frames (loaded on demand)
     "CollectionsJournal",

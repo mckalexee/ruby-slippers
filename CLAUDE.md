@@ -137,7 +137,8 @@ Users can bind this to a macro: `/click HearthstoneHelperButton`
 | `GameTooltip:SetToyByItemID(id)` | Show toy tooltip | |
 | `C_AddOns.LoadAddOn("Blizzard_Collections")` | Force-load Collections UI | Required before accessing CollectionsJournal |
 | `SecureActionButtonTemplate` | Secure clickable button | With `type="toy"`, `toy=itemID` |
-| `RegisterForClicks("AnyDown", "AnyUp")` | Register click types | **Required** for secure buttons to work |
+| `RegisterForClicks("AnyUp")` | Register click types | See note below about AnyDown vs AnyUp |
+| `C_ToyBox.PickupToyBoxItem(itemID)` | Drag toy to cursor | For drag-to-action-bar; requires hardware event (OnDragStart) |
 
 ### Hearthstone Categories
 
@@ -157,9 +158,9 @@ The Collections Journal tab uses SecureTabs-2.0 to avoid taint. Key points:
 
 If the tab causes taint issues, the fallback is a standalone `PortraitFrameTemplate` frame with `/hs collection` to open it.
 
-### Collection Panel Scrolling
+### Collection Panel Layout
 
-CollectionsTab.lua uses manual clip-frame + offset scrolling (not ScrollBox templates) for reliability. There's a pre-created pool of 20 `SecureActionButtonTemplate` "Use" buttons because secure frames cannot be created during combat.
+CollectionsTab.lua uses a 3x6 icon grid with paging (18 items per page), matching the Blizzard Toy Box layout. Each cell is a `SecureActionButtonTemplate` button so clicking uses the toy directly (no separate "Use" buttons). Icons are draggable to the action bar via `C_ToyBox.PickupToyBoxItem()` in `OnDragStart`.
 
 ## Adding New Hearthstones
 
@@ -187,6 +188,11 @@ The lookup tables (`AllHearthstoneIDs`, `HomeHearthstoneIDs`) are built automati
 ## Installation
 
 Copy the `HearthstoneHelper/` folder into `World of Warcraft\_retail_\Interface\AddOns\`.
+
+## Debugging
+
+- **Enable Lua errors in-game**: `/console scriptErrors 1` then `/reload`. The old "Interface > Display > Lua Errors" checkbox does NOT exist in WoW 12.
+- When a bug is reported, **get the actual error first** — do not guess at causes.
 
 ## WoW Lua Gotchas
 

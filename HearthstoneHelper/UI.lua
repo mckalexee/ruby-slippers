@@ -52,7 +52,8 @@ end)
 local btn = CreateFrame("Button", "HearthstoneHelperButton", frame, "SecureActionButtonTemplate")
 btn:SetSize(44, 44)
 btn:SetPoint("CENTER", frame, "CENTER", 0, 0)
-btn:RegisterForClicks("AnyDown", "AnyUp")
+btn:RegisterForClicks("AnyUp")
+btn:SetAttribute("useOnKeyDown", false)
 
 -- Icon texture
 local iconTex = btn:CreateTexture(nil, "ARTWORK")
@@ -82,49 +83,60 @@ btn:SetScript("OnMouseUp", function(self)
     self.pushed:SetAlpha(0)
 end)
 
+-- Drag-to-move: register on the BUTTON (not the parent frame) because
+-- the button sits on top and intercepts all mouse events.
+btn:RegisterForDrag("LeftButton")
+btn:SetScript("OnDragStart", function()
+    if ns.db and ns.db.buttonLocked then return end
+    frame:StartMoving()
+end)
+btn:SetScript("OnDragStop", function()
+    frame:StopMovingOrSizing()
+    if ns.db then
+        local point, _, relPoint, x, y = frame:GetPoint()
+        ns.db.buttonPosition = { point = point, relPoint = relPoint, x = x, y = y }
+    end
+end)
+
 -- Cooldown overlay
 local cooldownFrame = CreateFrame("Cooldown", nil, btn, "CooldownFrameTemplate")
 cooldownFrame:SetAllPoints()
 btn.cooldown = cooldownFrame
 
 -- ------------------------------------
--- PreClick: select random hearthstone BEFORE the secure click fires
+-- PreClick: set up attributes before the secure action fires.
+-- Only fires on mouse-up (AnyUp registration). Right-click clears
+-- type so the secure action is skipped; left-click ensures type="toy".
 -- ------------------------------------
 btn:SetScript("PreClick", function(self, button)
     if InCombatLockdown() then return end
 
     if button == "RightButton" then
-        -- Right-click opens collection tab (handled in PostClick)
         self:SetAttribute("type", nil)
-        return
-    end
-
-    local hs = ns:GetRandomHearthstone()
-    if hs then
+    else
         self:SetAttribute("type", "toy")
-        self:SetAttribute("toy", hs.itemID)
     end
 end)
 
 -- ------------------------------------
--- PostClick: update display, handle right-click
+-- PostClick: pick next random hearthstone, handle right-click.
+-- Only fires on mouse-up thanks to RegisterForClicks("AnyUp").
+-- If a drag occurred, WoW suppresses OnClick entirely.
 -- ------------------------------------
 btn:SetScript("PostClick", function(self, button)
     if button == "RightButton" then
-        -- Open the Collections Journal to our tab
         C_AddOns.LoadAddOn("Blizzard_Collections")
         if CollectionsJournal then
-            if CollectionsJournal:IsShown() then
-                HideUIPanel(CollectionsJournal)
-            else
-                ShowUIPanel(CollectionsJournal)
+            ShowUIPanel(CollectionsJournal)
+            if ns.collectionsTab and ns.collectionsTab.Select then
+                ns.collectionsTab.Select(ns.collectionsTab)
             end
         end
         return
     end
 
-    -- Update icon/tooltip to show next random hearthstone
-    ns:UpdateButtonDisplay()
+    -- Pick a new random hearthstone for the NEXT click and update display
+    ns:SetRandomHearthstoneOnButton()
 end)
 
 -- ------------------------------------
