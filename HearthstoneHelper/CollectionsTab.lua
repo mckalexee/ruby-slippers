@@ -193,8 +193,7 @@ local function CreateCell(parent, index)
 
     -- Favorite star - atlas
     local favStar = btn:CreateTexture(nil, "OVERLAY", nil, 2)
-    favStar:SetSize(16, 16)
-    favStar:SetPoint("TOPLEFT", iconTex, "TOPLEFT", -4, 4)
+    favStar:SetPoint("TOPLEFT", btn, "TOPLEFT", -12, 13)
     favStar:SetAtlas("collections-icon-favorites", true)
     favStar:Hide()
     btn.favoriteStar = favStar
