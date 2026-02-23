@@ -121,6 +121,7 @@ Files share state through the addon namespace: `local addonName, ns = ...` at th
 ## Rules
 
 - **Never recreate third-party libraries.** If a library needs to be embedded (LibStub, SecureTabs, etc.), fetch the real source from its canonical repository. If the fetch fails, stop and report the problem — do not write a "functionally equivalent" replacement.
+- **Use skills for releases and hotfixes.** When asked to publish, release, or tag a version, invoke the `/release` skill. When asked to patch a published version, invoke the `/hotfix` skill. Do NOT perform these procedures from memory — always load and follow the skill.
 
 ## Critical Technical Details
 
