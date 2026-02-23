@@ -233,7 +233,7 @@ The current version is the topmost non-Unreleased heading in `CHANGELOG.md`.
 
 ### Publishing Details
 
-The TOC uses `@project-version@` (replaced by tag name at build time). `## X-Curse-Project-ID: 1469357` tells the packager which CurseForge project to upload to. Do not hardcode version numbers.
+The TOC uses `@project-version@` (replaced by tag name at build time). `## X-Curse-Project-ID: 1470072` tells the packager which CurseForge project to upload to. Do not hardcode version numbers.
 
 Publishing uses **GitHub Actions** with **BigWigsMods/packager@v2** (`.github/workflows/release.yml`). Triggers on any tag push. CurseForge's built-in webhook packager does NOT work for this repo.
 
@@ -243,7 +243,7 @@ Tag suffixes control CurseForge release type: `1.2.0` → Release, `1.2.0-beta1`
 
 Required secret: `CF_API_KEY`. `GITHUB_TOKEN` is automatic.
 
-CurseForge: https://authors.curseforge.com/#/projects/1469357 | GitHub: https://github.com/mckalexee/ruby-slippers
+CurseForge: https://authors.curseforge.com/#/projects/1470072 | GitHub: https://github.com/mckalexee/ruby-slippers
 
 ## Debugging
 
