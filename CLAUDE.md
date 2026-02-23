@@ -122,6 +122,11 @@ Files share state through the addon namespace: `local addonName, ns = ...` at th
 
 - **Never recreate third-party libraries.** If a library needs to be embedded (LibStub, SecureTabs, etc.), fetch the real source from its canonical repository. If the fetch fails, stop and report the problem — do not write a "functionally equivalent" replacement.
 - **Use skills for releases and hotfixes.** When asked to publish, release, or tag a version, invoke the `/release` skill. When asked to patch a published version, invoke the `/hotfix` skill. Do NOT perform these procedures from memory — always load and follow the skill.
+- **Wait for user verification before committing.** Do not commit immediately after making changes. Wait for the user to test/verify in-game (or explicitly say the changes are good) before committing.
+- **When asked to commit, also push and check chores.** A "commit" request means: commit AND push to origin. Before committing, verify that:
+  - `CHANGELOG.md` has been updated under `## Unreleased` for any user-facing changes (skip for internal-only changes like CLAUDE.md edits).
+  - `README.md` is updated if the change affects documented features, commands, or controls.
+  - `CLAUDE.md` is updated if the change affects architecture, namespace members, APIs, or project structure.
 
 ## Critical Technical Details
 
