@@ -1,5 +1,9 @@
 local _, ns = ...
 
+-- Key Bindings UI labels (globals required by Bindings.xml)
+BINDING_HEADER_RUBYSLIPPERS = "Ruby Slippers"
+_G["BINDING_NAME_CLICK RubySlippersButton:LeftButton"] = "Use Random Hearthstone"
+
 -- =============================================================================
 -- Ruby Slippers - Data
 -- All known hearthstone toy IDs with metadata

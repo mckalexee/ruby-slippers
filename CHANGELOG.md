@@ -1,6 +1,7 @@
 # Ruby Slippers Changelog
 
 ## Unreleased
+- Add keybinding support: bind "Use Random Hearthstone" in Key Bindings > Ruby Slippers (no macro needed)
 
 ## 1.2.0 - 2026-02-23
 - Right-click on floating button now picks a new random hearthstone instead of opening the collection

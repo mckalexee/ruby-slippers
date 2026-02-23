@@ -36,13 +36,9 @@ World of Warcraft/_retail_/Interface/AddOns/
 
 ### Macro
 
-Create a macro with the following to bind a random hearthstone to a key:
+Go to **Esc > Key Bindings > Ruby Slippers** and bind "Use Random Hearthstone" to any key.
 
-```
-/click RubySlippersButton
-```
-
-Or enable "Create Action Bar Macro" in `/rs config` for an auto-managed macro with updating icon.
+Alternatively, create a macro with `/click RubySlippersButton`, or enable "Create Action Bar Macro" in `/rs config` for an auto-managed macro with updating icon.
 
 ### Button Controls
 
